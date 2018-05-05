@@ -1,37 +1,12 @@
 #include "decompress.h"
+#include "allocation.h"
+#include "compression-mode.h"
 #include "lut.h"
 #include "types.h"
 #include <stdio.h>
 #include <stdint.h>
-#include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
-enum CompressionMode {
-	UNCOMPRESSED,
-	FILL_BYTE,
-	FILL_BYTES,
-	FILL_INCREMENTAL_SEQUENCE,
-	COPY_BYTES,
-	COPY_REVERSED_BITS,
-	COPY_REVERSED_BYTES,
-	EXTEND_COMMAND
-};
-struct Allocation {
-	u8 **block;
-	size_t size;
-};
-size_t max(size_t a, size_t b) {
-	return a > b ? a : b;
-}
-void reserve(struct Allocation * const allocation, size_t minLimit) {
-	size_t maxLimit = minLimit * 2;
-	if (allocation->size < maxLimit) {
-		/* TODO: Limit max allocation to something reasonable */
-		const size_t newSize = max(maxLimit, allocation->size * 2);
-		*allocation->block = realloc(*allocation->block, newSize);
-		allocation->size = newSize;
-	}
-}
 size_t decompress(const u8 *compressed, u8 **decompressed) {
 	struct Allocation allocation = { decompressed, 0 };
 	/* TODO: Figure out the maximum sizes */
@@ -111,8 +86,7 @@ size_t decompress(const u8 *compressed, u8 **decompressed) {
 		}
 	}
 	if (allocation.size > bytesWritten) {
-		*allocation.block = realloc(*allocation.block, bytesWritten);
-		allocation.size = bytesWritten;
+		resize(&allocation, bytesWritten);
 	}
 	return allocation.size;
 }
