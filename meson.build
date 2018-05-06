@@ -7,8 +7,9 @@ project('hell', 'c', default_options: [
 ])
 includes = include_directories('include')
 testDependencies = files(
-	'src/test-tools.c',
-	'src/decompress.c'
+	'src/allocation.c',
+	'src/decompress.c',
+	'src/test-tools.c'
 )
 makeLut = executable('make-lut', 'src/make-lut.c',
 	include_directories: includes
@@ -18,6 +19,7 @@ lut = custom_target('Look-up table',
 	command: [makeLut, '@OUTPUT@']
 )
 executable('hell', [
+	'src/allocation.c',
 	'src/hell.c',
 	'src/decompress.c'
 ], lut,
