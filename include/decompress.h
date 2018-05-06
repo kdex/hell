@@ -1,4 +1,4 @@
 #pragma once
-#include "types.h"
 #include <stdlib.h>
-size_t decompress(const u8 *compressed, u8 **decompressed);
+#include <stdint.h>
+size_t decompress(const uint8_t *compressed, uint8_t **decompressed);
