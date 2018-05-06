@@ -1,5 +1,4 @@
 #include "decompress.h"
-#include "api.h"
 #include <check.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -14,7 +13,7 @@
 END_TEST
 void compare(const u8 *compressed, const u8 *decompressedExpected, size_t decompressedSizeExpected) {
 	u8 *decompressedActual = NULL;
-	const size_t size = HAL.decompress(compressed, &decompressedActual);
+	const size_t size = decompress(compressed, &decompressedActual);
 	if (size != decompressedSizeExpected) {
 		ck_abort_msg("Size mismatch. Expected %i, got %i", decompressedSizeExpected, size);
 	}

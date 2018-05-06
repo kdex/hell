@@ -1,5 +1,4 @@
 #include "decompress.h"
-#include "api.h"
 #include "types.h"
 #include <stdio.h>
 int main(void) {
@@ -12,6 +11,6 @@ int main(void) {
 	};
 	u8 result[] = { 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2 };
 	u8 *decompressed = NULL;
-	const size_t decompressedSize = HAL.decompress(compressed, &decompressed);
+	const size_t decompressedSize = decompress(compressed, &decompressed);
 	free(decompressed);
 }
