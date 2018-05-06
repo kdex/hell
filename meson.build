@@ -45,7 +45,7 @@ install_headers(
 libraries = both_libraries(name, [
 	'src/allocation.c',
 	'src/decompress.c'
-],
+], lut,
 	include_directories: includes,
 	install: true
 )
