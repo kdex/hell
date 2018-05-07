@@ -1,5 +1,10 @@
 # hell
 Set of compression and decompression tools for HAL Laboratory games.
+## Decompression
+In order to decompress the file `INPUT` and place the result at `OUTPUT`, you can use the `decompress` subcommand:
+```bash
+$ hell decompress INPUT OUTPUT
+```
 ## Development
 This project uses the Meson build system.
 ### How to build
