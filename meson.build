@@ -71,6 +71,7 @@ executable(name, [
 	'src/hell/main.c',
 	'src/io.c',
 ], lut,
+	c_args: cflags,
 	include_directories: includes,
 	install: true
 )
