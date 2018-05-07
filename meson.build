@@ -57,7 +57,7 @@ testDependencies = files(
 	'src/decompress.c',
 	'src/test-tools.c'
 )
-makeLut = executable('make-lut', 'src/make-lut.c',
+makeLut = executable('make-lut', 'src/make-lut/main.c',
 	c_args: cflags,
 	include_directories: includes
 )
@@ -65,14 +65,15 @@ lut = custom_target('Look-up table',
 	output: 'lut.h',
 	command: [makeLut, '@OUTPUT@']
 )
-#executable(name, [
-#	'src/allocation.c',
-#	'src/decompress.c',
-#	'src/hell.c'
-#], lut,
-#	include_directories: includes,
-#	install: true
-#)
+executable(name, [
+	'src/allocation.c',
+	'src/decompress.c',
+	'src/hell/main.c',
+	'src/io.c',
+], lut,
+	include_directories: includes,
+	install: true
+)
 publicHeaders = []
 foreach header : [
 	'decompress',
