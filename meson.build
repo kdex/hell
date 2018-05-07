@@ -4,12 +4,53 @@ project('hell', 'c',
 		'c_std=c11',
 		'buildtype=release',
 		'b_ndebug=if-release',
-		'b_pgo=use',
-		'warning_level=3',
-		'b_sanitize=address,undefined'
+		'warning_level=3'
 	]
 )
 name = meson.project_name()
+buildType = get_option('buildtype')
+cc = meson.get_compiler('c')
+cflags = []
+if buildType == 'debug'
+	flags = [
+		'-DDEBUG',
+		'-ggdb'
+	]
+	foreach flag : flags
+		if cc.has_argument(flag)
+			cflags += flag
+		endif
+	endforeach
+endif
+if buildType == 'release'
+	flags = [
+		'-s',
+		'-fomit-frame-pointer',
+		'-ffunction-sections',
+		'-fdata-sections',
+		'-fno-unwind-tables',
+		'-fno-asynchronous-unwind-tables',
+		'-fno-math-errno',
+		'-fno-unroll-loops',
+		'-fmerge-all-constants',
+		'-fno-ident',
+		'-ffast-math',
+		'-fdelete-null-pointer-checks',
+	]
+	foreach flag : flags
+		if cc.has_argument(flag)
+			cflags += flag
+		endif
+	endforeach
+endif
+foreach argument : [
+	'-Wno-newline-eof',
+	'-Wshadow'
+]
+	if cc.has_argument(argument)
+		cflags += argument
+	endif
+endforeach
 includes = include_directories('include')
 testDependencies = files(
 	'src/allocation.c',
@@ -17,6 +58,7 @@ testDependencies = files(
 	'src/test-tools.c'
 )
 makeLut = executable('make-lut', 'src/make-lut.c',
+	c_args: cflags,
 	include_directories: includes
 )
 lut = custom_target('Look-up table',
@@ -46,6 +88,7 @@ libraries = both_libraries(name, [
 	'src/allocation.c',
 	'src/decompress.c'
 ], lut,
+	c_args: cflags,
 	include_directories: includes,
 	install: true
 )

@@ -20,6 +20,7 @@ foreach test : tests
 		testFile,
 		testDependencies
 	], lut,
+		c_args: cflags,
 		include_directories: includes
 	)
 	test(test, executable)
