@@ -1,5 +1,4 @@
 #include "test-tools.h"
-#include "decompress.h"
 #include "types.h"
 #include <stdarg.h>
 #include <stdbool.h>
@@ -12,25 +11,30 @@ int fail(const char *format, ...) {
 	va_end(args);
 	return EXIT_FAILURE;
 }
-int compare(const u8 *compressed, const u8 *decompressedExpected, size_t decompressedSizeExpected) {
-	u8 *decompressedActual = NULL;
-	const size_t size = decompress(compressed, &decompressedActual);
-	if (size != decompressedSizeExpected) {
-		return fail("Size mismatch. Expected %i, got %i", decompressedSizeExpected, size);
+int testDecompress(const u8 *compressed, const u8 *decompressedExpected, size_t expectedSize) {
+	u8 *decompressed;
+	const size_t actualSize = decompress(compressed, &decompressed);
+	const int result = compare(decompressed, decompressedExpected, actualSize, expectedSize);
+	free(decompressed);
+	return result;
+}
+int compare(const u8 *actual, const u8 *expected, size_t actualSize, size_t expectedSize) {
+	if (actualSize != expectedSize) {
+		return fail("Size mismatch. Expected %i, got %i", expectedSize, actualSize);
 	}
-	if (memcmp(decompressedExpected, decompressedActual, size)) {
+	if (memcmp(expected, actual, actualSize)) {
 		char *message = malloc(1);
 		size_t messageSize = 1;
 		message[0] = '\0';
-		const char *offset = "Offset";
-		const char *expected = "Expected value";
-		const char *actual = "Actual value";
-		const char *attention = "!";
+		const char *offsetTitle = "Offset";
+		const char *expectedTitle = "Expected value";
+		const char *actualTitle = "Actual value";
+		const char *attentionTitle = "!";
 		const size_t padding = 3;
-		const size_t offsetWidth = strlen(offset) + padding;
-		const size_t expectedWidth = strlen(expected) + padding;
-		const size_t actualWidth = strlen(actual) + padding;
-		const size_t attentionWidth = strlen(attention) + padding;
+		const size_t offsetWidth = strlen(offsetTitle) + padding;
+		const size_t expectedWidth = strlen(expectedTitle) + padding;
+		const size_t actualWidth = strlen(actualTitle) + padding;
+		const size_t attentionWidth = strlen(attentionTitle) + padding;
 		/* Append heading to message */
 		const char *headingFormat = "%*s%*s%*s%*s\n";
 		const size_t headingSize = 1 + snprintf(
@@ -38,13 +42,13 @@ int compare(const u8 *compressed, const u8 *decompressedExpected, size_t decompr
 			0,
 			headingFormat,
 			offsetWidth,
-			offset,
+			offsetTitle,
 			expectedWidth,
-			expected,
+			expectedTitle,
 			actualWidth,
-			actual,
+			actualTitle,
 			attentionWidth,
-			attention
+			attentionTitle
 		);
 		messageSize += headingSize - 1;
 		message = realloc(message, messageSize);
@@ -54,21 +58,21 @@ int compare(const u8 *compressed, const u8 *decompressedExpected, size_t decompr
 			headingSize,
 			headingFormat,
 			offsetWidth,
-			offset,
+			offsetTitle,
 			expectedWidth,
-			expected,
+			expectedTitle,
 			actualWidth,
-			actual,
+			actualTitle,
 			attentionWidth,
-			attention
+			attentionTitle
 		);
 		strncat(message, heading, headingSize);
 		free(heading);
 		/* Append (mis)matches to message */
 		bool mismatch = false;
 		int maxLines = 10;
-		for (size_t i = 0; i < size; ++i) {
-			const bool hasMismatch = decompressedExpected[i] != decompressedActual[i];
+		for (size_t i = 0; i < actualSize; ++i) {
+			const bool hasMismatch = expected[i] != actual[i];
 			if (hasMismatch) {
 				mismatch = true;
 			}
@@ -82,9 +86,9 @@ int compare(const u8 *compressed, const u8 *decompressedExpected, size_t decompr
 					offsetWidth,
 					i,
 					expectedWidth,
-					decompressedExpected[i],
+					expected[i],
 					actualWidth,
-					decompressedActual[i],
+					actual[i],
 					attentionWidth,
 					notice
 				);
@@ -98,20 +102,22 @@ int compare(const u8 *compressed, const u8 *decompressedExpected, size_t decompr
 					offsetWidth,
 					i,
 					expectedWidth,
-					decompressedExpected[i],
+					expected[i],
 					actualWidth,
-					decompressedActual[i],
+					actual[i],
 					attentionWidth,
 					notice
 				);
 				strncat(message, comparison, comparisonSize);
+				free(comparison);
 			}
 		}
 		if (mismatch) {
-			return fail("\n%s", message);
+			const int value = fail("\n%s", message);
+			free(message);
+			return value;
 		}
 		free(message);
 	}
-	free(decompressedActual);
 	return EXIT_SUCCESS;
 }

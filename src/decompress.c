@@ -9,6 +9,7 @@
 #include <string.h>
 size_t decompress(const u8 *compressed, u8 **decompressed) {
 	struct Allocation allocation = { decompressed, 0 };
+	*allocation.block = NULL;
 	/* TODO: Figure out the maximum sizes */
 	size_t bytesRead = 0;
 	size_t bytesWritten = 0;

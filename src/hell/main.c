@@ -1,3 +1,4 @@
+#include "compress.h"
 #include "decompress.h"
 #include "io.h"
 #include "types.h"
@@ -16,6 +17,9 @@ int main(int argc, const char *argv[]) {
 	}
 	else {
 		const char *mode = argv[1];
+		if (!strcmp(mode, "compress")) {
+			/* TODO: Implement */
+		}
 		if (!strcmp(mode, "decompress")) {
 			if (argc < 4) {
 				fprintf(stderr, "Not enough arguments for mode \"%s\".\n", mode);
@@ -31,7 +35,7 @@ int main(int argc, const char *argv[]) {
 					return EXIT_FAILURE;
 				}
 				else {
-					u8 *decompressed = NULL;
+					u8 *decompressed;
 					const size_t size = decompress(inputFile, &decompressed);
 					free(inputFile);
 					if (!size) {
