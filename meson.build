@@ -54,7 +54,10 @@ endforeach
 includes = include_directories('include')
 testDependencies = files(
 	'src/allocation.c',
+	'src/compress.c',
+	'src/compressors.c',
 	'src/decompress.c',
+	'src/header-layout.c',
 	'src/test-tools.c'
 )
 makeLut = executable('make-lut', 'src/make-lut/main.c',

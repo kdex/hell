@@ -7,13 +7,13 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
-size_t decompress(const u8 *compressed, u8 **decompressed) {
+size_t decompress(const u8 *compressed, size_t compressedSize, u8 **decompressed) {
 	struct Allocation allocation = { decompressed, 0 };
 	*allocation.block = NULL;
 	/* TODO: Figure out the maximum sizes */
 	size_t bytesRead = 0;
 	size_t bytesWritten = 0;
-	while (true) {
+	for (size_t i = 0; i < compressedSize; ++i) {
 		u8 command = compressed[bytesRead++];
 		if (command == END) {
 			break;

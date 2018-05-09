@@ -1,4 +1,5 @@
 #include "test-tools.h"
+#include "types.h"
 int main(void) {
 	const u8 compressed[] = {
 		0, 1, 36, 3, 0, 7,
@@ -11,5 +12,5 @@ int main(void) {
 		7, 3, 3, 3, 3, 3, 1,
 		7, 3, 3, 3, 3, 3, 1
 	};
-	return testDecompress(compressed, decompressed, sizeof decompressed);
+	return test(decompress, compressed, sizeof compressed, decompressed, sizeof decompressed);
 }

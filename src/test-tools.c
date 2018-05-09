@@ -1,4 +1,6 @@
 #include "test-tools.h"
+#include "compress.h"
+#include "decompress.h"
 #include "types.h"
 #include <stdarg.h>
 #include <stdbool.h>
@@ -11,11 +13,11 @@ int fail(const char *format, ...) {
 	va_end(args);
 	return EXIT_FAILURE;
 }
-int testDecompress(const u8 *compressed, const u8 *decompressedExpected, size_t expectedSize) {
-	u8 *decompressed;
-	const size_t actualSize = decompress(compressed, &decompressed);
-	const int result = compare(decompressed, decompressedExpected, actualSize, expectedSize);
-	free(decompressed);
+int test(size_t (*fn)(const u8 *payload, size_t payloadSize, u8 **destination), const u8 *payload, size_t payloadSize, const u8 *expected, size_t expectedSize) {
+	u8 *buffer;
+	const size_t actualSize = fn(payload, payloadSize, &buffer);
+	const int result = compare(buffer, expected, actualSize, expectedSize);
+	free(buffer);
 	return result;
 }
 int compare(const u8 *actual, const u8 *expected, size_t actualSize, size_t expectedSize) {

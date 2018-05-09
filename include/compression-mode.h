@@ -1,5 +1,5 @@
 #pragma once
-enum CompressionMode {
+typedef enum {
 	UNCOMPRESSED,
 	FILL_BYTE,
 	FILL_BYTES,
@@ -8,4 +8,4 @@ enum CompressionMode {
 	COPY_REVERSED_BITS,
 	COPY_REVERSED_BYTES,
 	EXTEND_COMMAND
-};
+} CompressionMode;

@@ -29,14 +29,14 @@ int main(int argc, const char *argv[]) {
 				u8 *inputFile;
 				const char *inputFilename = argv[2];
 				const char *outputFilename = argv[3];
-				readFile(inputFilename, &inputFile);
+				const size_t inputSize = readFile(inputFilename, &inputFile);
 				if (!inputFile) {
 					printFileError(inputFilename, invocation);
 					return EXIT_FAILURE;
 				}
 				else {
 					u8 *decompressed;
-					const size_t size = decompress(inputFile, &decompressed);
+					const size_t size = decompress(inputFile, sizeof inputSize, &decompressed);
 					free(inputFile);
 					if (!size) {
 						fprintf(stderr, "%s doesn't seem to be a valid file.", inputFilename);
