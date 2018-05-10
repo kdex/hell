@@ -20,6 +20,23 @@ int test(size_t (*fn)(const u8 *payload, size_t payloadSize, u8 **destination), 
 	free(buffer);
 	return result;
 }
+int testUncompressedU8(const u8 *payload, size_t payloadSize, const u8 *expected, size_t expectedSize) {
+	CompressionContext *context = malloc(sizeof *context);
+	initCompressionContext(context);
+	const size_t actualSize = compressUncompressedU8(context, payload, payloadSize);
+	if (actualSize) {
+		/*
+		* Compressors write straight into the buffer, hence should resize the buffer to its actual size here.
+		* Usually, this is done at the end of `compress`.
+		*/
+		resize(context->allocation, actualSize);
+		const int result = compare(context->allocation->buffer, expected, actualSize, expectedSize);
+		freeCompressionContext(context);
+		return result;
+	}
+	freeCompressionContext(context);
+	return EXIT_FAILURE;
+}
 int compare(const u8 *actual, const u8 *expected, size_t actualSize, size_t expectedSize) {
 	if (actualSize != expectedSize) {
 		return fail("Size mismatch. Expected %i, got %i", expectedSize, actualSize);

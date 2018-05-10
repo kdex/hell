@@ -3,11 +3,21 @@
 size_t max(size_t a, size_t b) {
 	return a > b ? a : b;
 }
-void resize(struct Allocation * const allocation, size_t newSize) {
-	*allocation->block = realloc(*allocation->block, newSize);
+void initAllocation(Allocation *allocation) {
+	*allocation = (Allocation) {
+		.size = 0,
+		.buffer = NULL
+	};
+}
+void freeAllocation(Allocation *allocation) {
+	free(allocation->buffer);
+	free(allocation);
+}
+void resize(Allocation * const allocation, size_t newSize) {
+	allocation->buffer = realloc(allocation->buffer, newSize);
 	allocation->size = newSize;
 }
-void reserve(struct Allocation * const allocation, size_t minLimit) {
+void reserve(Allocation * const allocation, size_t minLimit) {
 	const size_t maxLimit = 2 * minLimit;
 	if (allocation->size < maxLimit) {
 		/* TODO: Limit max allocation to something reasonable */

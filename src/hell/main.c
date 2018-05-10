@@ -36,7 +36,7 @@ int main(int argc, const char *argv[]) {
 				}
 				else {
 					u8 *decompressed;
-					const size_t size = decompress(inputFile, sizeof inputSize, &decompressed);
+					const size_t size = decompress(inputFile, inputSize, &decompressed);
 					free(inputFile);
 					if (!size) {
 						fprintf(stderr, "%s doesn't seem to be a valid file.", inputFilename);

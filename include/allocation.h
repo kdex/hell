@@ -1,9 +1,11 @@
 #pragma once
 #include "types.h"
 #include <stdlib.h>
-struct Allocation {
-	u8 **block;
+typedef struct {
 	size_t size;
-};
-void resize(struct Allocation * const allocation, size_t newSize);
-void reserve(struct Allocation * const allocation, size_t minLimit);
+	u8 *buffer;
+} Allocation;
+void initAllocation(Allocation *allocation);
+void freeAllocation(Allocation *allocation);
+void resize(Allocation * const allocation, size_t newSize);
+void reserve(Allocation * const allocation, size_t minLimit);
