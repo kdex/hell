@@ -1,7 +1,7 @@
 #include "header.h"
 #include "types.h"
 #include <stdlib.h>
-void initHeader(Header *header, size_t headerBits, size_t indexBits) {
+void initHeader(Header *header, u8 headerBits, u8 indexBits) {
 	const u8 freeBits = headerBits - indexBits - MODE_BITS;
 	*header = (Header) {
 		.size = headerBits / BITS_IN_BYTE,

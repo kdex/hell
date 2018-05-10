@@ -5,6 +5,50 @@ In order to decompress the file `INPUT` and place the result at `OUTPUT`, you ca
 ```bash
 $ hell decompress INPUT OUTPUT
 ```
+## About the format
+### Compression modes
+HAL Laboratory's lossless compression format is the result of mixing different compression modes. It uses:
+
+ Mode  | Description
+-------|-------------
+   0   | Uncompressed
+   1   | Run-length-encoded (repeating byte)
+   2   | Run-length-encoded (repeating byte pair)
+   3   | Run-length-encoded (incrementally growing byte)
+   4   | LZ77 for exact matches
+   5   | LZ77 for exact matches in reversed order
+   6   | LZ77 for bit-reversed matches
+   7   | Meta mode, switches to large header
+### Chunks
+The input bytes are compressed into chunks; a compression mode results in a single compressed chunk. This chunk consists of a header, a payload and a chunk terminator (`0xff`). It should be noted that the chunk terminator **is** allowed as part of the payload.
+### Headers
+The header is used to store information about the chunk that is needed to decompress it. This entails the compression mode and the uncompressed length.
+
+Further, there are two different header formats that one needs to distinguish.
+#### Small headers
+Small headers consist of a single byte.
+##### Memory layout
+```
+	MMMIIIII
+
+	  MMM = Compression mode
+	IIIII = Maximum index of compressed data
+```
+As becomes clear with the memory layout, small headers can carry maximum payloads of 2⁵ B = 32 B, since there are only five bits that can be used to denote the maximum index (which implies the uncompressed length).
+#### Large headers
+Large headers use two bytes.
+##### Memory layout
+```
+	111MMMJJ IIIIIIII
+
+	  111 = Constant 1
+	  MMM = Compression mode
+	   JJ = Maximum index of compressed data (upper 2 bits)
+	IIIII = Maximum index of compressed data (lower 8 bits)
+```
+Since we have ten bits available to index our data, large headers must be used for up to 2¹⁰ B = 1 KiB.
+
+The constant `111` is necessary, since the decompressor can't know up front how large a header is. Therefore, it looks only at the first three bits of a chunk to determine the mode and will see it as mode `0b111 == 7`. Mode 7 should hence be considered a special mode that instructs the decompressor to also consider the upcoming byte as part of the header.
 ## Development
 This project uses the Meson build system.
 ### How to build

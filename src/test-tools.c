@@ -26,7 +26,7 @@ int testUncompressedU8(const u8 *payload, size_t payloadSize, const u8 *expected
 	const size_t actualSize = compressUncompressedU8(context, payload, payloadSize);
 	if (actualSize) {
 		/*
-		* Compressors write straight into the buffer, hence should resize the buffer to its actual size here.
+		* Compressors write straight into the buffer, hence we should resize the buffer to its actual size here.
 		* Usually, this is done at the end of `compress`.
 		*/
 		resize(context->allocation, actualSize);

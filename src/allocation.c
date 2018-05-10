@@ -6,6 +6,7 @@ size_t max(size_t a, size_t b) {
 void initAllocation(Allocation *allocation) {
 	*allocation = (Allocation) {
 		.size = 0,
+		.offset = 0,
 		.buffer = NULL
 	};
 }
