@@ -1,7 +1,7 @@
 #include "compression-context.h"
 #include "header.h"
 #include "types.h"
-void initCompressionContext(CompressionContext *context) {
+void initCompressionContext(CompressionContext *restrict context) {
 	*context = (CompressionContext) {
 		.allocation = malloc(sizeof (Allocation)),
 		.small = malloc(sizeof (Header)),
@@ -11,7 +11,7 @@ void initCompressionContext(CompressionContext *context) {
 	initSmallHeader(context->small);
 	initLargeHeader(context->large);
 }
-void freeCompressionContext(CompressionContext *context) {
+void freeCompressionContext(CompressionContext *restrict context) {
 	freeAllocation(context->allocation);
 	free(context->small);
 	free(context->large);

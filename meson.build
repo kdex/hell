@@ -14,7 +14,8 @@ cflags = []
 if buildType == 'debug'
 	flags = [
 		'-DDEBUG',
-		'-ggdb'
+		'-ggdb',
+		'-Wrestrict'
 	]
 	foreach flag : flags
 		if cc.has_argument(flag)

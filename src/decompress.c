@@ -7,39 +7,39 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
-size_t decompress(const u8 *compressed, size_t compressedSize, u8 **decompressed) {
-	Allocation *allocation = malloc(sizeof *allocation);
+size_t decompress(const u8 *restrict compressed, size_t compressedSize, u8 **restrict decompressed) {
+	Allocation *restrict allocation = malloc(sizeof *allocation);
 	initAllocation(allocation);
 	/* TODO: Figure out the maximum sizes */
 	size_t bytesRead = 0;
 	size_t bytesWritten = 0;
 	for (size_t i = 0; i < compressedSize; ++i) {
-		u8 command = compressed[bytesRead++];
-		if (command == END) {
+		u8 header = compressed[bytesRead++];
+		if (header == END) {
 			break;
 		}
-		/* `command` contains both length and type information. Split it up. */
-		u8 commandType = command >> 5;
+		/* `header` contains both mode and length information. Split it up. */
+		u8 mode = header >> 5;
 		size_t sourceLength = 0;
-		if (commandType != EXTEND_COMMAND) {
+		if (mode != EXTEND_HEADER) {
 			/* The last five bits contain information about how long the source data will be */
-			sourceLength = 1 + (command & 0x1F);
+			sourceLength = 1 + (header & 0x1f);
 		}
 		else {
-			commandType = (command & 0x1C) >> 2;
-			if (commandType != EXTEND_COMMAND) {
-				sourceLength = ((command & 3) << 8) + compressed[bytesRead++] + 1;
+			mode = (header & 0x1c) >> 2;
+			if (mode != EXTEND_HEADER) {
+				sourceLength = ((header & 3) << 8) + compressed[bytesRead++] + 1;
 			}
 		}
 		u16 copyOffset = 0;
-		if (commandType >= COPY_BYTES && commandType < EXTEND_COMMAND) {
+		if (mode >= COPY_BYTES && mode < EXTEND_HEADER) {
 			/* copyOffset is stored as u16 BE (TODO: verify) */
 			const u8 low = compressed[bytesRead++];
 			const u8 high = compressed[bytesRead++];
 			copyOffset = high << 8 | low;
 		}
 		reserve(allocation, bytesWritten + sourceLength);
-		switch (commandType) {
+		switch (mode) {
 			case UNCOMPRESSED: {
 				memcpy(allocation->buffer + bytesWritten, compressed + bytesRead, sourceLength);
 				bytesRead += sourceLength;

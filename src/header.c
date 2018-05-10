@@ -1,21 +1,21 @@
 #include "header.h"
 #include "types.h"
 #include <stdlib.h>
-void initHeader(Header *header, u8 headerBits, u8 indexBits) {
+void initHeader(Header *restrict header, u8 headerBits, u8 indexBits) {
 	const u8 freeBits = headerBits - indexBits - MODE_BITS;
 	*header = (Header) {
 		.size = headerBits / BITS_IN_BYTE,
 		.mask = 0xff << (BITS_IN_BYTE - freeBits),
 		.indexShift = indexBits - (indexBits % BITS_IN_BYTE),
 		.modeShift = indexBits % BITS_IN_BYTE,
-		.maxStorage = 1 << indexBits
+		.capacity = 1 << indexBits
 	};
 }
-u8 makeFirstByte(Header *header, CompressionMode mode, u16 size) {
+u8 makeFirstByte(Header *restrict header, CompressionMode mode, u16 size) {
 	const u16 maxIndex = size - 1;
-	return header->mask + (mode << header->modeShift) + (maxIndex >> header->indexShift);
+	return header->mask | mode << header->modeShift | maxIndex >> header->indexShift;
 }
-void initSmallHeader(Header *header) {
+void initSmallHeader(Header *restrict header) {
 	/*
 	* Small header in memory: MMMIIIII
 	*   MMM = Compression mode
@@ -23,7 +23,7 @@ void initSmallHeader(Header *header) {
 	*/
 	initHeader(header, BITS_IN_BYTE, 5);
 }
-void initLargeHeader(Header *header) {
+void initLargeHeader(Header *restrict header) {
 	/*
 	* Large header in memory: 111MMMJJ IIIIIIII
 	*   MMM = Compression mode

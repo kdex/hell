@@ -6,22 +6,22 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
-int fail(const char *format, ...) {
+int fail(const char *restrict format, ...) {
 	va_list args;
 	va_start(args, format);
 	vfprintf(stderr, format, args);
 	va_end(args);
 	return EXIT_FAILURE;
 }
-int test(size_t (*fn)(const u8 *payload, size_t payloadSize, u8 **destination), const u8 *payload, size_t payloadSize, const u8 *expected, size_t expectedSize) {
+int test(size_t (*fn)(const u8 *restrict payload, size_t payloadSize, u8 **restrict destination), const u8 *restrict payload, size_t payloadSize, const u8 *restrict expected, size_t expectedSize) {
 	u8 *buffer;
 	const size_t actualSize = fn(payload, payloadSize, &buffer);
 	const int result = compare(buffer, expected, actualSize, expectedSize);
 	free(buffer);
 	return result;
 }
-int testUncompressedU8(const u8 *payload, size_t payloadSize, const u8 *expected, size_t expectedSize) {
-	CompressionContext *context = malloc(sizeof *context);
+int testUncompressedU8(const u8 *restrict payload, size_t payloadSize, const u8 *restrict expected, size_t expectedSize) {
+	CompressionContext *restrict context = malloc(sizeof *context);
 	initCompressionContext(context);
 	const size_t actualSize = compressUncompressedU8(context, payload, payloadSize);
 	if (actualSize) {
@@ -37,7 +37,7 @@ int testUncompressedU8(const u8 *payload, size_t payloadSize, const u8 *expected
 	freeCompressionContext(context);
 	return EXIT_FAILURE;
 }
-int compare(const u8 *actual, const u8 *expected, size_t actualSize, size_t expectedSize) {
+int compare(const u8 *restrict actual, const u8 *restrict expected, size_t actualSize, size_t expectedSize) {
 	if (actualSize != expectedSize) {
 		return fail("Size mismatch. Expected %i, got %i", expectedSize, actualSize);
 	}

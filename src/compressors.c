@@ -4,16 +4,16 @@
 #include "header.h"
 #include "types.h"
 #include <stdlib.h>
-size_t compressUncompressedU8(CompressionContext *context, const u8 *payload, u16 size) {
-	Header *header = NULL;
-	size_t *offset = &context->allocation->offset;
-	size_t startOffset = *offset;
-	if (size <= context->small->maxStorage) {
+size_t compressUncompressedU8(CompressionContext *restrict context, const u8 *restrict payload, u16 size) {
+	Header *header;
+	if (size <= context->small->capacity) {
 		header = context->small;
 	}
 	else {
 		header = context->large;
 	}
+	size_t *restrict offset = &context->allocation->offset;
+	const size_t startOffset = *offset;
 	const u8 firstByte = makeFirstByte(header, UNCOMPRESSED, size);
 	/* An additional byte is used to store the end */
 	const size_t compressedSize = header->size + size + 1;
