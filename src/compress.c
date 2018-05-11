@@ -2,9 +2,9 @@
 #include "compression-context.h"
 #include "types.h"
 #include <stdlib.h>
-size_t compress(const u8 *decompressed, size_t decompressedSize, u8 **compressed) {
+size_t compress(const u8 *restrict decompressed, size_t decompressedSize, u8 **restrict compressed) {
 	CompressionContext *context = malloc(sizeof *context);
-	initCompressionContext(context);
+	initCompressionContext(context, decompressed, decompressedSize);
 	freeCompressionContext(context);
 	size_t size = 0;
 	/* TODO: Implement */

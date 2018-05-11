@@ -4,7 +4,7 @@
 #include "header.h"
 #include "types.h"
 #include <stdlib.h>
-size_t compressUncompressedU8(CompressionContext *restrict context, const u8 *restrict payload, u16 size) {
+size_t compressUncompressed(CompressionContext *restrict context, u16 size) {
 	Header *header;
 	if (size <= context->small->capacity) {
 		header = context->small;
@@ -14,16 +14,38 @@ size_t compressUncompressedU8(CompressionContext *restrict context, const u8 *re
 	}
 	size_t *restrict offset = &context->allocation->offset;
 	const size_t startOffset = *offset;
-	const u8 firstByte = makeFirstByte(header, UNCOMPRESSED, size);
-	/* An additional byte is used to store the end */
+	/* An additional byte (+ 1) is used to store the end */
 	const size_t compressedSize = header->size + size + 1;
 	reserve(context->allocation, compressedSize);
-	context->allocation->buffer[startOffset] = firstByte;
+	context->allocation->buffer[startOffset] = makeFirstByte(header, UNCOMPRESSED, size);
 	context->allocation->buffer[startOffset + 1] = size - 1;
 	for (u16 i = 0; i < size; ++i) {
-		context->allocation->buffer[startOffset + header->size + i] = payload[i];
+		context->allocation->buffer[startOffset + header->size + i] = context->uncompressed[i];
 	}
-	context->allocation->buffer[startOffset + header->size + size] = END;
+	context->allocation->buffer[startOffset + compressedSize - 1] = END;
+	*offset += compressedSize;
+	return compressedSize;
+}
+size_t compressFillByte(CompressionContext *restrict context, u16 size, u8 byte) {
+	Header *header;
+	if (size <= context->small->capacity) {
+		header = context->small;
+	}
+	else {
+		header = context->large;
+	}
+	size_t *restrict offset = &context->allocation->offset;
+	const size_t startOffset = *offset;
+	/*
+	* Chunk structure:
+	* [ Header ][ Byte value ][ END ]
+	*/
+	const size_t compressedSize = header->size + 2;
+	reserve(context->allocation, compressedSize);
+	context->allocation->buffer[startOffset] = makeFirstByte(header, FILL_BYTE, size);
+	context->allocation->buffer[startOffset + 1] = size - 1;
+	context->allocation->buffer[startOffset + header->size] = byte;
+	context->allocation->buffer[startOffset + compressedSize - 1] = END;
 	*offset += compressedSize;
 	return compressedSize;
 }

@@ -1,5 +1,6 @@
 tests = [
-	'uncompressed-uint8'
+	'uncompressed',
+	'fill-byte'
 ]
 foreach test : tests
 	testFile = test + '.c'

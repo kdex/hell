@@ -3,6 +3,7 @@
 #include "compression-mode.h"
 #include "lut.h"
 #include "types.h"
+#include <assert.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
@@ -13,7 +14,8 @@ size_t decompress(const u8 *restrict compressed, size_t compressedSize, u8 **res
 	/* TODO: Figure out the maximum sizes */
 	size_t bytesRead = 0;
 	size_t bytesWritten = 0;
-	for (size_t i = 0; i < compressedSize; ++i) {
+	while (true) {
+		assert(bytesRead <= compressedSize);
 		u8 header = compressed[bytesRead++];
 		if (header == END) {
 			break;
@@ -86,6 +88,7 @@ size_t decompress(const u8 *restrict compressed, size_t compressedSize, u8 **res
 			}
 		}
 	}
+	assert(bytesRead == compressedSize);
 	if (allocation->size > bytesWritten) {
 		resize(allocation, bytesWritten);
 	}

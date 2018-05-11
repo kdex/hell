@@ -11,8 +11,8 @@ tests = [
 	'fill-incremental-sequence-0-255',
 	'fill-incremental-sequence-0-255-0-255',
 	'fill-incremental-sequence-small',
-	'uncompressed-uint8',
-	'uncompressed-uint16'
+	'uncompressed-1',
+	'uncompressed-2'
 ]
 foreach test : tests
 	testFile = test + '.c'

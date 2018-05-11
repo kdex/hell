@@ -2,9 +2,11 @@
 #include "allocation.h"
 #include "header.h"
 typedef struct {
-	Allocation *allocation;
-	Header *small;
-	Header *large;
+	Allocation *restrict allocation;
+	Header *restrict small;
+	Header *restrict large;
+	u8 *restrict uncompressed;
+	size_t uncompressedSize;
 } CompressionContext;
-void initCompressionContext(CompressionContext *context);
-void freeCompressionContext(CompressionContext *context);
+void initCompressionContext(CompressionContext *restrict context, const u8 *restrict uncompressed, size_t uncompressedSize);
+void freeCompressionContext(CompressionContext *restrict context);
