@@ -56,12 +56,8 @@ int testUncompressed(
 ) {
 	CompressionContext *restrict context = malloc(sizeof *context);
 	initCompressionContext(context, uncompressed, uncompressedSize);
-	const size_t compressedSize = compressUncompressed(context, uncompressedSize);
+	const size_t compressedSize = compressUncompressed(context);
 	const int result = validateCompressionResult(context, compressedSize, expected, expectedSize);
-	if (result == EXIT_FAILURE) {
-		freeCompressionContext(context);
-		return result;
-	}
 	freeCompressionContext(context);
 	return result;
 }
@@ -74,12 +70,23 @@ int testFillByte(
 ) {
 	CompressionContext *restrict context = malloc(sizeof *context);
 	initCompressionContext(context, uncompressed, uncompressedSize);
-	const size_t compressedSize = compressFillByte(context, uncompressedSize, byte);
+	const size_t compressedSize = compressFillByte(context, byte);
 	const int result = validateCompressionResult(context, compressedSize, expected, expectedSize);
-	if (result == EXIT_FAILURE) {
-		freeCompressionContext(context);
-		return result;
-	}
+	freeCompressionContext(context);
+	return result;
+}
+int testFillBytes(
+	const u8 *restrict uncompressed,
+	size_t uncompressedSize,
+	const u8 *restrict expected,
+	size_t expectedSize,
+	u8 byteA,
+	u8 byteB
+) {
+	CompressionContext *restrict context = malloc(sizeof *context);
+	initCompressionContext(context, uncompressed, uncompressedSize);
+	const size_t compressedSize = compressFillBytes(context, byteA, byteB);
+	const int result = validateCompressionResult(context, compressedSize, expected, expectedSize);
 	freeCompressionContext(context);
 	return result;
 }

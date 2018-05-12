@@ -25,5 +25,13 @@ int testFillByte(
 	size_t expectedSize,
 	u8 byte
 );
+int testFillBytes(
+	const u8 *restrict payload,
+	size_t payloadSize,
+	const u8 *restrict expected,
+	size_t expectedSize,
+	u8 byteA,
+	u8 byteB
+);
 int compare(const u8 *restrict actual, size_t actualSize, const u8 *restrict expected, size_t expectedSize);
 int fail(const char *format, ...);

@@ -4,48 +4,74 @@
 #include "header.h"
 #include "types.h"
 #include <stdlib.h>
-size_t compressUncompressed(CompressionContext *restrict context, u16 size) {
-	Header *header;
+void chooseHeader(const CompressionContext *restrict context, Header **restrict header, u16 size) {
 	if (size <= context->small->capacity) {
-		header = context->small;
+		*header = context->small;
 	}
 	else {
-		header = context->large;
+		*header = context->large;
 	}
+}
+size_t compressUncompressed(CompressionContext *restrict context) {
+	const u16 size = context->uncompressedSize;
 	size_t *restrict offset = &context->allocation->offset;
 	const size_t startOffset = *offset;
-	/* An additional byte (+ 1) is used to store the end */
+	Header *header;
+	chooseHeader(context, &header, size);
+	/*
+	* Chunk structure:
+	* [ Header ][ Uncompressed data ][ END ]
+	*/
 	const size_t compressedSize = header->size + size + 1;
 	reserve(context->allocation, compressedSize);
-	context->allocation->buffer[startOffset] = makeFirstByte(header, UNCOMPRESSED, size);
-	context->allocation->buffer[startOffset + 1] = size - 1;
+	u8 *restrict buffer = context->allocation->buffer;
+	buffer[startOffset] = makeFirstByte(header, UNCOMPRESSED, size);
+	buffer[startOffset + 1] = size - 1;
 	for (u16 i = 0; i < size; ++i) {
-		context->allocation->buffer[startOffset + header->size + i] = context->uncompressed[i];
+		buffer[startOffset + header->size + i] = context->uncompressed[i];
 	}
-	context->allocation->buffer[startOffset + compressedSize - 1] = END;
+	buffer[startOffset + compressedSize - 1] = END;
 	*offset += compressedSize;
 	return compressedSize;
 }
-size_t compressFillByte(CompressionContext *restrict context, u16 size, u8 byte) {
-	Header *header;
-	if (size <= context->small->capacity) {
-		header = context->small;
-	}
-	else {
-		header = context->large;
-	}
+size_t compressFillByte(CompressionContext *restrict context, u8 byte) {
+	const u16 size = context->uncompressedSize;
 	size_t *restrict offset = &context->allocation->offset;
 	const size_t startOffset = *offset;
+	Header *header;
+	chooseHeader(context, &header, size);
 	/*
 	* Chunk structure:
 	* [ Header ][ Byte value ][ END ]
 	*/
 	const size_t compressedSize = header->size + 2;
 	reserve(context->allocation, compressedSize);
-	context->allocation->buffer[startOffset] = makeFirstByte(header, FILL_BYTE, size);
-	context->allocation->buffer[startOffset + 1] = size - 1;
-	context->allocation->buffer[startOffset + header->size] = byte;
-	context->allocation->buffer[startOffset + compressedSize - 1] = END;
+	u8 *restrict buffer = context->allocation->buffer;
+	buffer[startOffset] = makeFirstByte(header, FILL_BYTE, size);
+	buffer[startOffset + 1] = size - 1;
+	buffer[startOffset + header->size] = byte;
+	buffer[startOffset + compressedSize - 1] = END;
+	*offset += compressedSize;
+	return compressedSize;
+}
+size_t compressFillBytes(CompressionContext *restrict context, u8 byteA, u8 byteB) {
+	const u16 size = context->uncompressedSize / 2;
+	size_t *restrict offset = &context->allocation->offset;
+	const size_t startOffset = *offset;
+	Header *header;
+	chooseHeader(context, &header, size);
+	/*
+	* Chunk structure:
+	* [ Header ][ Byte A ][ Byte B ][ END ]
+	*/
+	const size_t compressedSize = header->size + 3;
+	reserve(context->allocation, compressedSize);
+	u8 *restrict buffer = context->allocation->buffer;
+	buffer[startOffset] = makeFirstByte(header, FILL_BYTES, size);
+	buffer[startOffset + 1] = size - 1;
+	buffer[startOffset + header->size] = byteA;
+	buffer[startOffset + header->size + 1] = byteB;
+	buffer[startOffset + compressedSize - 1] = END;
 	*offset += compressedSize;
 	return compressedSize;
 }

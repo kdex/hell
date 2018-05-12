@@ -16,7 +16,7 @@ size_t decompress(const u8 *restrict compressed, size_t compressedSize, u8 **res
 	size_t bytesWritten = 0;
 	while (true) {
 		assert(bytesRead <= compressedSize);
-		u8 header = compressed[bytesRead++];
+		const u8 header = compressed[bytesRead++];
 		if (header == END) {
 			break;
 		}
@@ -93,7 +93,7 @@ size_t decompress(const u8 *restrict compressed, size_t compressedSize, u8 **res
 		resize(allocation, bytesWritten);
 	}
 	size_t size = allocation->size;
-	if (size) {
+	if (size && bytesRead == compressedSize) {
 		*decompressed = malloc(size);
 		memcpy(*decompressed, allocation->buffer, size);
 	}
