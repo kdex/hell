@@ -90,6 +90,20 @@ int testFillBytes(
 	freeCompressionContext(context);
 	return result;
 }
+int testFillIncrementalSequence(
+	const u8 *restrict uncompressed,
+	size_t uncompressedSize,
+	const u8 *restrict expected,
+	size_t expectedSize,
+	u8 seed
+) {
+	CompressionContext *restrict context = malloc(sizeof *context);
+	initCompressionContext(context, uncompressed, uncompressedSize);
+	const size_t compressedSize = compressFillIncrementalSequence(context, seed);
+	const int result = validateCompressionResult(context, compressedSize, expected, expectedSize);
+	freeCompressionContext(context);
+	return result;
+}
 int compare(
 	const u8 *restrict actual,
 	size_t actualSize,

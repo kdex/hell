@@ -75,3 +75,23 @@ size_t compressFillBytes(CompressionContext *restrict context, u8 byteA, u8 byte
 	*offset += compressedSize;
 	return compressedSize;
 }
+size_t compressFillIncrementalSequence(CompressionContext *restrict context, u8 seed) {
+	const u16 size = context->uncompressedSize;
+	size_t *restrict offset = &context->allocation->offset;
+	const size_t startOffset = *offset;
+	Header *header;
+	chooseHeader(context, &header, size);
+	/*
+	* Chunk structure:
+	* [ Header ][ Seed ][ END ]
+	*/
+	const size_t compressedSize = header->size + 2;
+	reserve(context->allocation, compressedSize);
+	u8 *restrict buffer = context->allocation->buffer;
+	buffer[startOffset] = makeFirstByte(header, FILL_INCREMENTAL_SEQUENCE, size);
+	buffer[startOffset + 1] = size - 1;
+	buffer[startOffset + header->size] = seed;
+	buffer[startOffset + compressedSize - 1] = END;
+	*offset += compressedSize;
+	return compressedSize;
+}

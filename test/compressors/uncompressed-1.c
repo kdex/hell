@@ -8,7 +8,7 @@ int main(void) {
 		const u8 compressed[] = {
 			0, i, END
 		};
-		int value = testUncompressed(uncompressed, sizeof uncompressed, compressed, sizeof compressed);
+		const int value = testUncompressed(uncompressed, sizeof uncompressed, compressed, sizeof compressed);
 		if (value == EXIT_FAILURE) {
 			return value;
 		}

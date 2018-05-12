@@ -33,5 +33,12 @@ int testFillBytes(
 	u8 byteA,
 	u8 byteB
 );
+int testFillIncrementalSequence(
+	const u8 *restrict uncompressed,
+	size_t uncompressedSize,
+	const u8 *restrict expected,
+	size_t expectedSize,
+	u8 seed
+);
 int compare(const u8 *restrict actual, size_t actualSize, const u8 *restrict expected, size_t expectedSize);
 int fail(const char *format, ...);

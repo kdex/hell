@@ -10,7 +10,11 @@ tests = [
 	'fill-bytes-1',
 	'fill-bytes-32',
 	'fill-bytes-33',
-	'fill-bytes-1024'
+	'fill-bytes-1024',
+	'fill-incremental-sequence-1',
+	'fill-incremental-sequence-32',
+	'fill-incremental-sequence-33',
+	'fill-incremental-sequence-1024'
 ]
 foreach test : tests
 	testFile = test + '.c'
