@@ -18,7 +18,7 @@ HAL Laboratory's lossless compression format is the result of mixing different c
    4   | LZ77 for exact matches
    5   | LZ77 for exact matches in reversed order
    6   | LZ77 for bit-reversed matches
-   7   | Meta mode, switches to large header
+   7   | Meta mode, indicates large header
 ### Chunks
 The input bytes are compressed into chunks; a compression mode results in a single compressed chunk. This chunk consists of a header, a payload and a chunk terminator (`0xff`). It should be noted that the chunk terminator **is** allowed as part of the payload.
 ### Headers
@@ -29,22 +29,22 @@ Further, there are two different header formats that one needs to distinguish.
 Small headers consist of a single byte.
 ##### Memory layout
 ```
-	MMMIIIII
+MMMIIIII
 
-	  MMM = Compression mode
-	IIIII = Maximum index of compressed data
+  MMM = Compression mode
+IIIII = Maximum index of compressed data
 ```
 As becomes clear with the memory layout, small headers can carry maximum payloads of 2⁵ B = 32 B, since there are only five bits that can be used to denote the maximum index (which implies the uncompressed length).
 #### Large headers
 Large headers use two bytes.
 ##### Memory layout
 ```
-	111MMMJJ IIIIIIII
+111MMMJJ IIIIIIII
 
-	  111 = Constant 1
-	  MMM = Compression mode
-	   JJ = Maximum index of compressed data (upper 2 bits)
-	IIIII = Maximum index of compressed data (lower 8 bits)
+  111 = Constant 1
+  MMM = Compression mode
+   JJ = Maximum index of compressed data (upper 2 bits)
+IIIII = Maximum index of compressed data (lower 8 bits)
 ```
 Since we have ten bits available to index our data, large headers must be used for up to 2¹⁰ B = 1 KiB.
 

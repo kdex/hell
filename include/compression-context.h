@@ -5,7 +5,7 @@ typedef struct {
 	Allocation *restrict allocation;
 	Header *restrict small;
 	Header *restrict large;
-	u8 *restrict uncompressed;
+	const u8 *restrict uncompressed;
 	size_t uncompressedSize;
 } CompressionContext;
 void initCompressionContext(CompressionContext *restrict context, const u8 *restrict uncompressed, size_t uncompressedSize);
