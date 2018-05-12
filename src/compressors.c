@@ -95,7 +95,7 @@ size_t compressFillIncrementalSequence(CompressionContext *restrict context, u8 
 	*offset += compressedSize;
 	return compressedSize;
 }
-size_t compressCopyBytes(CompressionContext *restrict context, u16 copyOffset) {
+size_t compressCopy(CompressionContext *restrict context, CompressionMode mode, u16 copyOffset) {
 	const u16 size = context->uncompressedSize;
 	size_t *restrict offset = &context->allocation->offset;
 	const size_t startOffset = *offset;
@@ -108,7 +108,7 @@ size_t compressCopyBytes(CompressionContext *restrict context, u16 copyOffset) {
 	const size_t compressedSize = header->size + 2;
 	reserve(context->allocation, compressedSize);
 	u8 *restrict buffer = context->allocation->buffer;
-	buffer[startOffset] = makeFirstByte(header, COPY_BYTES, size);
+	buffer[startOffset] = makeFirstByte(header, mode, size);
 	buffer[startOffset + 1] = size - 1;
 	buffer[startOffset + header->size] = copyOffset;
 	buffer[startOffset + compressedSize - 1] = END;

@@ -5,7 +5,7 @@ int main(void) {
 		const u8 compressed[] = {
 			159, i, END
 		};
-		const int value = testCopyBytes(NULL, 32, compressed, sizeof compressed, i);
+		const int value = testCopy(NULL, 32, compressed, sizeof compressed, COPY_BYTES, i);
 		if (value == EXIT_FAILURE) {
 			return value;
 		}

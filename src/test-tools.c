@@ -1,5 +1,6 @@
 #include "test-tools.h"
 #include "compress.h"
+#include "compression-mode.h"
 #include "decompress.h"
 #include "types.h"
 #include <stdarg.h>
@@ -106,16 +107,17 @@ int testFillIncrementalSequence(
 	freeCompressionContext(context);
 	return result;
 }
-int testCopyBytes(
+int testCopy(
 	const u8 *restrict uncompressed,
 	size_t uncompressedSize,
 	const u8 *restrict expected,
 	size_t expectedSize,
+	CompressionMode mode,
 	u16 copyOffset
 ) {
 	CompressionContext *restrict context = malloc(sizeof *context);
 	initCompressionContext(context, uncompressed, uncompressedSize);
-	const size_t compressedSize = compressCopyBytes(context, copyOffset);
+	const size_t compressedSize = compressCopy(context, mode, copyOffset);
 	const int result = validateCompressionResult(context, compressedSize, expected, expectedSize);
 	freeCompressionContext(context);
 	return result;

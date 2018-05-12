@@ -1,5 +1,6 @@
 #pragma once
 #include "compress.h"
+#include "compression-mode.h"
 #include "compressors.h"
 #include "decompress.h"
 #include "types.h"
@@ -40,11 +41,12 @@ int testFillIncrementalSequence(
 	size_t expectedSize,
 	u8 seed
 );
-int testCopyBytes(
+int testCopy(
 	const u8 *restrict uncompressed,
 	size_t uncompressedSize,
 	const u8 *restrict expected,
 	size_t expectedSize,
+	CompressionMode mode,
 	u16 copyOffset
 );
 int compare(const u8 *restrict actual, size_t actualSize, const u8 *restrict expected, size_t expectedSize);
