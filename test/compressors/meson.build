@@ -1,8 +1,8 @@
 tests = [
-	'uncompressed-1',
-	'uncompressed-32',
-	'uncompressed-33',
-	'uncompressed-1024',
+	'copy-bytes-1',
+	'copy-bytes-32',
+	'copy-bytes-33',
+	'copy-bytes-1024',
 	'fill-byte-1',
 	'fill-byte-32',
 	'fill-byte-33',
@@ -14,7 +14,11 @@ tests = [
 	'fill-incremental-sequence-1',
 	'fill-incremental-sequence-32',
 	'fill-incremental-sequence-33',
-	'fill-incremental-sequence-1024'
+	'fill-incremental-sequence-1024',
+	'uncompressed-1',
+	'uncompressed-32',
+	'uncompressed-33',
+	'uncompressed-1024'
 ]
 foreach test : tests
 	testFile = test + '.c'

@@ -40,5 +40,12 @@ int testFillIncrementalSequence(
 	size_t expectedSize,
 	u8 seed
 );
+int testCopyBytes(
+	const u8 *restrict uncompressed,
+	size_t uncompressedSize,
+	const u8 *restrict expected,
+	size_t expectedSize,
+	u16 copyOffset
+);
 int compare(const u8 *restrict actual, size_t actualSize, const u8 *restrict expected, size_t expectedSize);
 int fail(const char *format, ...);

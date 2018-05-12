@@ -42,10 +42,12 @@ int validateCompressionResult(
 	* Lastly, we decompress the compressed data and compare it against the uncompressed payload.
 	* This is a sanity check for `decompress`.
 	*/
-	u8 *decompressed;
-	const size_t decompressedSize = decompress(context->allocation->buffer, compressedSize, &decompressed);
-	result = compare(decompressed, decompressedSize, context->uncompressed, context->uncompressedSize);
-	free(decompressed);
+	if (context->uncompressed) {
+		u8 *decompressed;
+		const size_t decompressedSize = decompress(context->allocation->buffer, compressedSize, &decompressed);
+		result = compare(decompressed, decompressedSize, context->uncompressed, context->uncompressedSize);
+		free(decompressed);
+	}
 	return result;
 }
 int testUncompressed(
@@ -100,6 +102,20 @@ int testFillIncrementalSequence(
 	CompressionContext *restrict context = malloc(sizeof *context);
 	initCompressionContext(context, uncompressed, uncompressedSize);
 	const size_t compressedSize = compressFillIncrementalSequence(context, seed);
+	const int result = validateCompressionResult(context, compressedSize, expected, expectedSize);
+	freeCompressionContext(context);
+	return result;
+}
+int testCopyBytes(
+	const u8 *restrict uncompressed,
+	size_t uncompressedSize,
+	const u8 *restrict expected,
+	size_t expectedSize,
+	u16 copyOffset
+) {
+	CompressionContext *restrict context = malloc(sizeof *context);
+	initCompressionContext(context, uncompressed, uncompressedSize);
+	const size_t compressedSize = compressCopyBytes(context, copyOffset);
 	const int result = validateCompressionResult(context, compressedSize, expected, expectedSize);
 	freeCompressionContext(context);
 	return result;
