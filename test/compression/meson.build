@@ -1,6 +1,10 @@
 tests = [
-	'uncompressed-1',
-	'uncompressed-2'
+	'all-bytes-1',
+	'all-bytes-2',
+	'byte-pair',
+	'lz-20',
+	'lz-25',
+	'lz-30'
 ]
 foreach test : tests
 	testFile = test + '.c'

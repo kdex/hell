@@ -18,14 +18,44 @@ size_t compress(const u8 *restrict uncompressed, size_t uncompressedSize, u8 **r
 	size_t windowEnd = min(maxWindowSize - 1, maxIndex);
 	/* TODO: Implement */
 	size_t lookAheadStart = 0;
-	bool lzFailed = false;
 	size_t uncompressedBuffer = 0;
 	while (lookAheadStart < uncompressedSize) {
+		bool lzFailed = false;
 		const size_t windowSize = windowEnd - searchStart + 1;
 		if (searchStart < lookAheadStart) {
 			/* Dictionary exists */
-			lzFailed = true;
-			/* TODO: Write out uncompressed buffer if possible */
+			const size_t availableLookAhead = windowEnd - lookAheadStart + 1;
+			size_t i = lookAheadStart - 1;
+			size_t bestOffset;
+			u16 matchLength = 0;
+			do {
+				const bool isMatch = uncompressed[i] == uncompressed[lookAheadStart];
+				if (isMatch) {
+					u16 length = 1;
+					for (size_t j = 1; j < min(availableLookAhead, lookAheadStart - i); ++j) {
+						if (uncompressed[i + j] == uncompressed[lookAheadStart + j]) {
+							++length;
+						}
+					}
+					if (matchLength < length) {
+						bestOffset = lookAheadStart - i;
+						matchLength = length;
+					}
+				}
+			}
+			while (i-- != searchStart);
+			if (matchLength) {
+				/* Matches found */
+				compressedSize += compressCopy(context, matchLength, COPY_BYTES, bestOffset);
+				lookAheadStart += matchLength;
+// 				searchStart = min(searchStart + matchLength, maxIndex);
+				windowEnd = min(windowEnd + matchLength, maxIndex);
+				
+			}
+			else {
+				lzFailed = true;
+			}
+			/* TODO: Write out uncompressed buffer if possible? */
 		}
 		else {
 			lzFailed = true;
@@ -34,7 +64,7 @@ size_t compress(const u8 *restrict uncompressed, size_t uncompressedSize, u8 **r
 			const bool checkPairs = searchStart + 2 <= maxIndex;
 			const u8 byteA = uncompressed[searchStart];
 			u8 byteB;
-			u16 pairedBytes = 0;
+			u16 pairedBytes = 1;
 			u16 matched = 1 + uncompressedBuffer;
 			CompressionMode leader = UNCOMPRESSED;
 			{
@@ -47,7 +77,7 @@ size_t compress(const u8 *restrict uncompressed, size_t uncompressedSize, u8 **r
 						++pairedBytes;
 					}
 					if (matched < pairedBytes) {
-						matched = pairedBytes;
+						matched = 2 * pairedBytes;
 						leader = FILL_BYTES;
 					}
 				}
@@ -101,7 +131,7 @@ size_t compress(const u8 *restrict uncompressed, size_t uncompressedSize, u8 **r
 			}
 // 			searchStart += min(searchStart + constantBytes, maxIndex);
 // 			windowEnd = min(windowEnd + constantBytes, maxIndex);
-			lookAheadStart = lookAheadStart + matched;
+			lookAheadStart += matched;
 		}
 	}
 	if (uncompressedBuffer) {

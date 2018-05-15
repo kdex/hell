@@ -22,7 +22,7 @@ u16 compressUncompressed(CompressionContext *restrict context, u16 size, const u
 	* [ Header ][ Uncompressed data ][ END ]
 	*/
 	const u16 compressedSize = header->size + size + 1;
-	reserve(context->allocation, compressedSize);
+	reserve(context->allocation, context->allocation->size + compressedSize);
 	u8 *restrict buffer = context->allocation->buffer;
 	buffer[startOffset] = makeFirstByte(header, UNCOMPRESSED, size);
 	buffer[startOffset + 1] = size - 1;
@@ -43,7 +43,7 @@ u16 compressFillByte(CompressionContext *restrict context, u16 size, u8 byte) {
 	* [ Header ][ Byte value ][ END ]
 	*/
 	const u16 compressedSize = header->size + 2;
-	reserve(context->allocation, compressedSize);
+	reserve(context->allocation, context->allocation->size + compressedSize);
 	u8 *restrict buffer = context->allocation->buffer;
 	buffer[startOffset] = makeFirstByte(header, FILL_BYTE, size);
 	buffer[startOffset + 1] = size - 1;
@@ -63,7 +63,7 @@ u16 compressFillBytes(CompressionContext *restrict context, u16 size, u8 byteA, 
 	* [ Header ][ Byte A ][ Byte B ][ END ]
 	*/
 	const u16 compressedSize = header->size + 3;
-	reserve(context->allocation, compressedSize);
+	reserve(context->allocation, context->allocation->size + compressedSize);
 	u8 *restrict buffer = context->allocation->buffer;
 	buffer[startOffset] = makeFirstByte(header, FILL_BYTES, size);
 	buffer[startOffset + 1] = size - 1;
@@ -83,7 +83,7 @@ u16 compressFillIncrementalSequence(CompressionContext *restrict context, u16 si
 	* [ Header ][ Seed ][ END ]
 	*/
 	const u16 compressedSize = header->size + 2;
-	reserve(context->allocation, compressedSize);
+	reserve(context->allocation, context->allocation->size + compressedSize);
 	u8 *restrict buffer = context->allocation->buffer;
 	buffer[startOffset] = makeFirstByte(header, FILL_INCREMENTAL_SEQUENCE, size);
 	buffer[startOffset + 1] = size - 1;
@@ -102,7 +102,7 @@ u16 compressCopy(CompressionContext *restrict context, u16 size, CompressionMode
 	* [ Header ][ Copy offset ][ END ]
 	*/
 	const u16 compressedSize = header->size + 2;
-	reserve(context->allocation, compressedSize);
+	reserve(context->allocation, context->allocation->size + compressedSize);
 	u8 *restrict buffer = context->allocation->buffer;
 	buffer[startOffset] = makeFirstByte(header, mode, size);
 	buffer[startOffset + 1] = size - 1;
