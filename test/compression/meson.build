@@ -1,5 +1,6 @@
 tests = [
-	
+	'uncompressed-1',
+	'uncompressed-2'
 ]
 foreach test : tests
 	testFile = test + '.c'

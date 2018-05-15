@@ -60,7 +60,8 @@ testDependencies = files(
 	'src/compressors.c',
 	'src/decompress.c',
 	'src/header.c',
-	'src/test-tools.c'
+	'src/test-tools.c',
+	'src/util.c',
 )
 makeLut = executable('make-lut', 'src/make-lut/main.c',
 	c_args: cflags,
@@ -75,6 +76,7 @@ executable(name, [
 	'src/decompress.c',
 	'src/hell/main.c',
 	'src/io.c',
+	'src/util.c'
 ], lut,
 	c_args: cflags,
 	include_directories: includes,
@@ -93,7 +95,8 @@ install_headers(
 )
 libraries = both_libraries(name, [
 	'src/allocation.c',
-	'src/decompress.c'
+	'src/decompress.c',
+	'src/util.c'
 ], lut,
 	c_args: cflags,
 	include_directories: includes,

@@ -1,8 +1,6 @@
 #include "allocation.h"
+#include "util.h"
 #include <stdlib.h>
-size_t max(size_t a, size_t b) {
-	return a > b ? a : b;
-}
 void initAllocation(Allocation *allocation) {
 	*allocation = (Allocation) {
 		.size = 0,

@@ -4,7 +4,7 @@
 #include "header.h"
 #include "types.h"
 #include <stdlib.h>
-void chooseHeader(const CompressionContext *restrict context, Header **restrict header, u16 size) {
+void chooseHeader(const CompressionContext *restrict context, u16 size, Header **restrict header) {
 	if (size <= context->small->capacity) {
 		*header = context->small;
 	}
@@ -12,39 +12,37 @@ void chooseHeader(const CompressionContext *restrict context, Header **restrict 
 		*header = context->large;
 	}
 }
-size_t compressUncompressed(CompressionContext *restrict context) {
-	const u16 size = context->uncompressedSize;
+u16 compressUncompressed(CompressionContext *restrict context, u16 size, const u8 *restrict payload) {
 	size_t *restrict offset = &context->allocation->offset;
 	const size_t startOffset = *offset;
 	Header *header;
-	chooseHeader(context, &header, size);
+	chooseHeader(context, size, &header);
 	/*
 	* Chunk structure:
 	* [ Header ][ Uncompressed data ][ END ]
 	*/
-	const size_t compressedSize = header->size + size + 1;
+	const u16 compressedSize = header->size + size + 1;
 	reserve(context->allocation, compressedSize);
 	u8 *restrict buffer = context->allocation->buffer;
 	buffer[startOffset] = makeFirstByte(header, UNCOMPRESSED, size);
 	buffer[startOffset + 1] = size - 1;
 	for (u16 i = 0; i < size; ++i) {
-		buffer[startOffset + header->size + i] = context->uncompressed[i];
+		buffer[startOffset + header->size + i] = payload[i];
 	}
 	buffer[startOffset + compressedSize - 1] = END;
 	*offset += compressedSize;
 	return compressedSize;
 }
-size_t compressFillByte(CompressionContext *restrict context, u8 byte) {
-	const u16 size = context->uncompressedSize;
+u16 compressFillByte(CompressionContext *restrict context, u16 size, u8 byte) {
 	size_t *restrict offset = &context->allocation->offset;
 	const size_t startOffset = *offset;
 	Header *header;
-	chooseHeader(context, &header, size);
+	chooseHeader(context, size, &header);
 	/*
 	* Chunk structure:
 	* [ Header ][ Byte value ][ END ]
 	*/
-	const size_t compressedSize = header->size + 2;
+	const u16 compressedSize = header->size + 2;
 	reserve(context->allocation, compressedSize);
 	u8 *restrict buffer = context->allocation->buffer;
 	buffer[startOffset] = makeFirstByte(header, FILL_BYTE, size);
@@ -54,17 +52,17 @@ size_t compressFillByte(CompressionContext *restrict context, u8 byte) {
 	*offset += compressedSize;
 	return compressedSize;
 }
-size_t compressFillBytes(CompressionContext *restrict context, u8 byteA, u8 byteB) {
-	const u16 size = context->uncompressedSize / 2;
+u16 compressFillBytes(CompressionContext *restrict context, u16 size, u8 byteA, u8 byteB) {
+	size /= 2;
 	size_t *restrict offset = &context->allocation->offset;
 	const size_t startOffset = *offset;
 	Header *header;
-	chooseHeader(context, &header, size);
+	chooseHeader(context, size, &header);
 	/*
 	* Chunk structure:
 	* [ Header ][ Byte A ][ Byte B ][ END ]
 	*/
-	const size_t compressedSize = header->size + 3;
+	const u16 compressedSize = header->size + 3;
 	reserve(context->allocation, compressedSize);
 	u8 *restrict buffer = context->allocation->buffer;
 	buffer[startOffset] = makeFirstByte(header, FILL_BYTES, size);
@@ -75,17 +73,16 @@ size_t compressFillBytes(CompressionContext *restrict context, u8 byteA, u8 byte
 	*offset += compressedSize;
 	return compressedSize;
 }
-size_t compressFillIncrementalSequence(CompressionContext *restrict context, u8 seed) {
-	const u16 size = context->uncompressedSize;
+u16 compressFillIncrementalSequence(CompressionContext *restrict context, u16 size, u8 seed) {
 	size_t *restrict offset = &context->allocation->offset;
 	const size_t startOffset = *offset;
 	Header *header;
-	chooseHeader(context, &header, size);
+	chooseHeader(context, size, &header);
 	/*
 	* Chunk structure:
 	* [ Header ][ Seed ][ END ]
 	*/
-	const size_t compressedSize = header->size + 2;
+	const u16 compressedSize = header->size + 2;
 	reserve(context->allocation, compressedSize);
 	u8 *restrict buffer = context->allocation->buffer;
 	buffer[startOffset] = makeFirstByte(header, FILL_INCREMENTAL_SEQUENCE, size);
@@ -95,17 +92,16 @@ size_t compressFillIncrementalSequence(CompressionContext *restrict context, u8 
 	*offset += compressedSize;
 	return compressedSize;
 }
-size_t compressCopy(CompressionContext *restrict context, CompressionMode mode, u16 copyOffset) {
-	const u16 size = context->uncompressedSize;
+u16 compressCopy(CompressionContext *restrict context, u16 size, CompressionMode mode, u16 copyOffset) {
 	size_t *restrict offset = &context->allocation->offset;
 	const size_t startOffset = *offset;
 	Header *header;
-	chooseHeader(context, &header, size);
+	chooseHeader(context, size, &header);
 	/*
 	* Chunk structure:
 	* [ Header ][ Copy offset ][ END ]
 	*/
-	const size_t compressedSize = header->size + 2;
+	const u16 compressedSize = header->size + 2;
 	reserve(context->allocation, compressedSize);
 	u8 *restrict buffer = context->allocation->buffer;
 	buffer[startOffset] = makeFirstByte(header, mode, size);

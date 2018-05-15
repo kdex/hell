@@ -6,46 +6,49 @@
 #include "types.h"
 #include <stdlib.h>
 int test(
-	size_t (*fn)(const u8 *restrict payload,
-	size_t payloadSize, u8 **restrict destination),
+	size_t (*fn)(
+		const u8 *restrict payload,
+		size_t payloadSize,
+		u8 **restrict destination
+	),
 	const u8 *restrict payload,
 	size_t payloadSize,
 	const u8 *restrict expected,
 	size_t expectedSize
 );
 int testUncompressed(
-	const u8 *restrict payload,
-	size_t payloadSize,
+	const u8 *restrict uncompressed,
+	u16 uncompressedSize,
 	const u8 *restrict expected,
-	size_t expectedSize
+	u16 expectedSize
 );
 int testFillByte(
-	const u8 *restrict payload,
-	size_t payloadSize,
+	const u8 *restrict uncompressed,
+	u16 uncompressedSize,
 	const u8 *restrict expected,
-	size_t expectedSize,
+	u16 expectedSize,
 	u8 byte
 );
 int testFillBytes(
-	const u8 *restrict payload,
-	size_t payloadSize,
+	const u8 *restrict uncompressed,
+	u16 uncompressedSize,
 	const u8 *restrict expected,
-	size_t expectedSize,
+	u16 expectedSize,
 	u8 byteA,
 	u8 byteB
 );
 int testFillIncrementalSequence(
 	const u8 *restrict uncompressed,
-	size_t uncompressedSize,
+	u16 uncompressedSize,
 	const u8 *restrict expected,
-	size_t expectedSize,
+	u16 expectedSize,
 	u8 seed
 );
 int testCopy(
 	const u8 *restrict uncompressed,
-	size_t uncompressedSize,
+	u16 uncompressedSize,
 	const u8 *restrict expected,
-	size_t expectedSize,
+	u16 expectedSize,
 	CompressionMode mode,
 	u16 copyOffset
 );
