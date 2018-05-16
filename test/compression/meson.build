@@ -5,7 +5,8 @@ tests = [
 	'byte-pair',
 	'lz-20',
 	'lz-25',
-	'lz-30'
+	'lz-30',
+	'mixed',
 ]
 foreach test : tests
 	testFile = test + '.c'
