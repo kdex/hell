@@ -95,7 +95,7 @@ u16 compressCopy(CompressionContext *restrict context, u16 size, CompressionMode
 	chooseHeader(context, size, &header);
 	/*
 	* Chunk structure:
-	* [ Header ][ Copy offset LSB ][ Copy offset MSB ]
+	* [ Header ][ Copy offset MSB ][ Copy offset LSB ]
 	*/
 	const u16 compressedSize = header->size + 2;
 	reserve(context->allocation, context->allocation->size + compressedSize);

@@ -34,9 +34,9 @@ size_t decompress(const u8 *restrict compressed, size_t compressedSize, u8 **res
 		}
 		u16 copyOffset = 0;
 		if (mode >= COPY_BYTES && mode < EXTEND_HEADER) {
-			const u8 low = compressed[bytesRead++];
-			const u8 high = compressed[bytesRead++];
-			copyOffset = low << 8 | high;
+			const u8 msb = compressed[bytesRead++];
+			const u8 lsb = compressed[bytesRead++];
+			copyOffset = msb << 8 | lsb;
 		}
 		reserve(allocation, bytesWritten + sourceLength);
 		switch (mode) {
