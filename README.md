@@ -54,6 +54,12 @@ IIIII = Maximum index of compressed data (lower 8 bits)
 Since we have ten bits available to index our data, large headers must be used for up to 2¹⁰ B = 1 KiB.
 
 The constant `111` is necessary, since the decompressor can't know up front how large a header is. Therefore, it looks only at the first three bits of a chunk to determine the mode and will see it as mode `0b111 == 7`. Mode 7 should hence be considered a special mode that instructs the decompressor to also consider the upcoming byte as part of the header.
+### Limitations
+Modes 4, 5 and 6 are closely related to Lempel-Ziv compression. However, HAL Laboratory chose to deviate from LZ77 and **did not** store offsets relatively to the current look-ahead buffer position; instead, they chose to store absolute offsets. Since these modes use two bytes to store the offset, LZ compression can only work if the offset is in `[0, 2¹⁶ - 1 = 65535]`.
+
+Effectively, this limits the input file size to **2¹⁶ B = 64 KiB**.
+
+This also implies that the "sliding window" you may know from LZ77 can have a maximum size of `2¹⁶ B = 64 KiB`, except that this "sliding window" *does not* actually slide, since its size will always cover the entire input file.
 ## Development
 This project uses the Meson build system.
 ### How to build
