@@ -73,7 +73,11 @@ lut = custom_target('Look-up table',
 )
 executable(name, [
 	'src/allocation.c',
+	'src/compress.c',
+	'src/compression-context.c',
+	'src/compressors.c',
 	'src/decompress.c',
+	'src/header.c',
 	'src/hell/main.c',
 	'src/io.c',
 	'src/util.c'

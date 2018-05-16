@@ -3,15 +3,14 @@
 #include <stdlib.h>
 int main(void) {
 	const u8 uncompressed[] = {
-		1, 2, 3, 4, 5,
-		1, 2, 3, 4, 5,
-		1, 2, 3, 4, 5,
-		1, 2, 3, 4, 5
+		'a', ' ',
+		'b', ' ',
+		'c',
 	};
 	const u8 compressed[] = {
-		100, 1,
-		132, 0, 5,
-		137, 0, 10,
+		2, 'a', ' ', 'b',
+		128, 0, 2,
+		0, 'c',
 		END
 	};
 	return test(compress, uncompressed, sizeof uncompressed, compressed, sizeof compressed);

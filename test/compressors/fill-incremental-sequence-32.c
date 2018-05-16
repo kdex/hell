@@ -8,7 +8,7 @@ int main(void) {
 			uncompressed[i] = seed + i;
 		}
 		const u8 compressed[] = {
-			127, seed, END
+			127, seed
 		};
 		const int value = testFillIncrementalSequence(uncompressed, sizeof uncompressed, compressed, sizeof compressed, seed);
 		if (value == EXIT_FAILURE) {

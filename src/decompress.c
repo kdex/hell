@@ -14,8 +14,7 @@ size_t decompress(const u8 *restrict compressed, size_t compressedSize, u8 **res
 	/* TODO: Figure out the maximum sizes */
 	size_t bytesRead = 0;
 	size_t bytesWritten = 0;
-	while (true) {
-		assert(bytesRead <= compressedSize);
+	while (bytesRead < compressedSize) {
 		const u8 header = compressed[bytesRead++];
 		if (header == END) {
 			break;
@@ -35,10 +34,9 @@ size_t decompress(const u8 *restrict compressed, size_t compressedSize, u8 **res
 		}
 		u16 copyOffset = 0;
 		if (mode >= COPY_BYTES && mode < EXTEND_HEADER) {
-			/* copyOffset is stored as u16 BE (TODO: verify) */
 			const u8 low = compressed[bytesRead++];
 			const u8 high = compressed[bytesRead++];
-			copyOffset = high << 8 | low;
+			copyOffset = low << 8 | high;
 		}
 		reserve(allocation, bytesWritten + sourceLength);
 		switch (mode) {
@@ -70,6 +68,7 @@ size_t decompress(const u8 *restrict compressed, size_t compressedSize, u8 **res
 				break;
 			}
 			case COPY_BYTES: {
+				/* TODO: memmove? */
 				memcpy(allocation->buffer + bytesWritten, allocation->buffer + copyOffset, sourceLength);
 				bytesWritten += sourceLength;
 				break;

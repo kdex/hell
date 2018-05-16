@@ -20,7 +20,7 @@ HAL Laboratory's lossless compression format is the result of mixing different c
    6   | LZ77 for bit-reversed matches
    7   | Meta mode, indicates large header
 ### Chunks
-The input bytes are compressed into chunks; a compression mode results in a single compressed chunk. This chunk consists of a header, a payload and a chunk terminator (`0xff`). It should be noted that the chunk terminator **is** allowed as part of the payload.
+The input bytes are compressed into chunks; one compression mode will results in one compressed chunk. This chunk consists of a header and a payload. At the end of all chunks, there will be a compression terminator symbol (`0xff`) denoting that no more chunk will follow. It should be noted that this terminator **is** allowed as part of the payload.
 ### Headers
 The header is used to store information about the chunk that is needed to decompress it. This entails the compression mode and the uncompressed length.
 

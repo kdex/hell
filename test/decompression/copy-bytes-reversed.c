@@ -3,8 +3,8 @@
 int main(void) {
 	const u8 compressed[] = {
 		0, 1, 36, 3, 0, 7,
-		198, 6, 0,
-		198, 6, 0,
+		198, 0, 6,
+		198, 0, 6,
 		END
 	};
 	const u8 decompressed[] = {

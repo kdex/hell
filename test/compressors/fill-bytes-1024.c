@@ -11,7 +11,7 @@ int main(void) {
 		uncompressed[i + 1] = byteB;
 	}
 	const u8 compressed[] = {
-		235, 255, byteA, byteB, END
+		235, 255, byteA, byteB
 	};
 	return testFillBytes(uncompressed, sizeof uncompressed, compressed, sizeof compressed, byteA, byteB);
 }

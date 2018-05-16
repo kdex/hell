@@ -1,4 +1,5 @@
 tests = [
+	'abc',
 	'all-bytes-1',
 	'all-bytes-2',
 	'byte-pair',

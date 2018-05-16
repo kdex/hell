@@ -3,13 +3,12 @@
 int main(void) {
 	const u16 size = 1024;
 	u8 uncompressed[size];
-	u8 compressed[2 + size + 1];
+	u8 compressed[2 + size];
 	compressed[0] = 227;
 	compressed[1] = 255;
 	for (u16 i = 0; i < size; ++i) {
 		uncompressed[i] = i;
 		compressed[i + 2] = i;
 	}
-	compressed[2 + size] = END;
 	return testUncompressed(uncompressed, sizeof uncompressed, compressed, sizeof compressed);
 }

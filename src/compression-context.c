@@ -17,3 +17,8 @@ void freeCompressionContext(CompressionContext *restrict context) {
 	free(context->large);
 	free(context);
 }
+size_t terminateCompressionContext(CompressionContext *context) {
+	resize(context->allocation, context->allocation->offset + 1);
+	context->allocation->buffer[context->allocation->offset] = END;
+	return 1;
+}

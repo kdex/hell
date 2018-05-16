@@ -3,7 +3,7 @@
 int main(void) {
 	for (u16 i = 0; i <= UINT8_MAX; ++i) {
 		const u8 compressed[] = {
-			240, 32, i, END
+			240, 32, 0, i
 		};
 		const int value = testCopy(NULL, 33, compressed, sizeof compressed, COPY_BYTES, i);
 		if (value == EXIT_FAILURE) {

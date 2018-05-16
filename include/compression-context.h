@@ -8,3 +8,4 @@ typedef struct {
 } CompressionContext;
 void initCompressionContext(CompressionContext *restrict context);
 void freeCompressionContext(CompressionContext *restrict context);
+size_t terminateCompressionContext(CompressionContext *context);

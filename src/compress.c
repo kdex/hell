@@ -6,6 +6,8 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
+/* TODO: remove */
+#include <stdio.h>
 size_t compress(const u8 *restrict uncompressed, size_t uncompressedSize, u8 **restrict compressed) {
 	CompressionContext *context = malloc(sizeof *context);
 	initCompressionContext(context);
@@ -18,7 +20,8 @@ size_t compress(const u8 *restrict uncompressed, size_t uncompressedSize, u8 **r
 	size_t windowEnd = min(maxWindowSize - 1, maxIndex);
 	/* TODO: Implement */
 	size_t lookAheadStart = 0;
-	size_t uncompressedBuffer = 0;
+	size_t bufferSize = 0;
+	size_t bufferOffset = 0;
 	while (lookAheadStart < uncompressedSize) {
 		bool lzFailed = false;
 		const size_t windowSize = windowEnd - searchStart + 1;
@@ -33,6 +36,7 @@ size_t compress(const u8 *restrict uncompressed, size_t uncompressedSize, u8 **r
 				if (isMatch) {
 					u16 length = 1;
 					for (size_t j = 1; j < min(availableLookAhead, lookAheadStart - i); ++j) {
+// 						printf("uncompressed[%u + %u] = %u\n", i, j, uncompressed[j]);
 						if (uncompressed[i + j] == uncompressed[lookAheadStart + j]) {
 							++length;
 						}
@@ -45,12 +49,15 @@ size_t compress(const u8 *restrict uncompressed, size_t uncompressedSize, u8 **r
 			}
 			while (i-- != searchStart);
 			if (matchLength) {
+				if (bufferSize) {
+					compressedSize += compressUncompressed(context, bufferSize, uncompressed + bufferOffset);
+					bufferSize = 0;
+				}
 				/* Matches found */
 				compressedSize += compressCopy(context, matchLength, COPY_BYTES, bestOffset);
 				lookAheadStart += matchLength;
 // 				searchStart = min(searchStart + matchLength, maxIndex);
 				windowEnd = min(windowEnd + matchLength, maxIndex);
-				
 			}
 			else {
 				lzFailed = true;
@@ -65,7 +72,7 @@ size_t compress(const u8 *restrict uncompressed, size_t uncompressedSize, u8 **r
 			const u8 byteA = uncompressed[searchStart];
 			u8 byteB;
 			u16 pairedBytes = 1;
-			u16 matched = 1 + uncompressedBuffer;
+			u16 matched = 1;
 			CompressionMode leader = UNCOMPRESSED;
 			{
 				if (checkPairs) {
@@ -111,9 +118,9 @@ size_t compress(const u8 *restrict uncompressed, size_t uncompressedSize, u8 **r
 					leader = FILL_INCREMENTAL_SEQUENCE;
 				}
 			}
-			if (leader != UNCOMPRESSED && uncompressedBuffer) {
-				compressedSize += compressUncompressed(context, uncompressedBuffer, uncompressed + searchStart);
-				uncompressedBuffer = 0;
+			if (leader != UNCOMPRESSED && bufferSize) {
+				compressedSize += compressUncompressed(context, bufferSize, uncompressed + bufferOffset);
+				bufferSize = 0;
 			}
 			switch (leader) {
 				case FILL_BYTE:
@@ -126,7 +133,10 @@ size_t compress(const u8 *restrict uncompressed, size_t uncompressedSize, u8 **r
 					compressedSize += compressFillIncrementalSequence(context, matched, byteA);
 					break;
 				default:
-					++uncompressedBuffer;
+					if (!bufferSize) {
+						bufferOffset = lookAheadStart;
+					}
+					++bufferSize;
 					break;
 			}
 // 			searchStart += min(searchStart + constantBytes, maxIndex);
@@ -134,9 +144,10 @@ size_t compress(const u8 *restrict uncompressed, size_t uncompressedSize, u8 **r
 			lookAheadStart += matched;
 		}
 	}
-	if (uncompressedBuffer) {
-		compressedSize += compressUncompressed(context, uncompressedBuffer, uncompressed + searchStart);
+	if (bufferSize) {
+		compressedSize += compressUncompressed(context, bufferSize, uncompressed + bufferOffset);
 	}
+	compressedSize += terminateCompressionContext(context);
 	*compressed = malloc(compressedSize);
 	if (compressedSize) {
 		memcpy(*compressed, context->allocation->buffer, compressedSize);
