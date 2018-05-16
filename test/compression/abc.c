@@ -9,7 +9,7 @@ int main(void) {
 	};
 	const u8 compressed[] = {
 		2, 'a', ' ', 'b',
-		128, 0, 2,
+		128, 0, 1,
 		0, 'c',
 		END
 	};

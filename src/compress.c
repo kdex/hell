@@ -31,18 +31,18 @@ size_t compress(const u8 *restrict uncompressed, size_t uncompressedSize, u8 **r
 			size_t i = lookAheadStart - 1;
 			size_t bestOffset;
 			u16 matchLength = 0;
+			/* TODO: Reverse this search to return early */
 			do {
 				const bool isMatch = uncompressed[i] == uncompressed[lookAheadStart];
 				if (isMatch) {
 					u16 length = 1;
 					for (size_t j = 1; j < min(availableLookAhead, lookAheadStart - i); ++j) {
-// 						printf("uncompressed[%u + %u] = %u\n", i, j, uncompressed[j]);
 						if (uncompressed[i + j] == uncompressed[lookAheadStart + j]) {
 							++length;
 						}
 					}
 					if (matchLength < length) {
-						bestOffset = lookAheadStart - i;
+						bestOffset = i;
 						matchLength = length;
 					}
 				}
