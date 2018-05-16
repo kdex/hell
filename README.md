@@ -1,7 +1,12 @@
 # hell
 Set of compression and decompression tools for HAL Laboratory games.
+## Compression
+In order to compress the file `INPUT` and place the result at `OUTPUT`, you can use the `compress` subcommand:
+```bash
+$ hell compress INPUT OUTPUT
+```
 ## Decompression
-In order to decompress the file `INPUT` and place the result at `OUTPUT`, you can use the `decompress` subcommand:
+Analogously, in order to decompress the file `INPUT` and place the result at `OUTPUT`, you can use the `decompress` subcommand:
 ```bash
 $ hell decompress INPUT OUTPUT
 ```
@@ -20,7 +25,7 @@ HAL Laboratory's lossless compression format is the result of mixing different c
    6   | LZ77 for bit-reversed matches
    7   | Meta mode, indicates large header
 ### Chunks
-The input bytes are compressed into chunks; one compression mode will results in one compressed chunk. This chunk consists of a header and a payload. At the end of all chunks, there will be a compression terminator symbol (`0xff`) denoting that no more chunk will follow. It should be noted that this terminator **is** allowed as part of the payload.
+The input bytes are compressed into chunks; one compression mode will result in one compressed chunk, which consists of a header and a payload. After the chunk stream, there will be a compression terminator symbol (`0xff`) denoting that no more chunks will follow. It should be noted that this terminator **is** allowed as part of a chunk's payload.
 ### Headers
 The header is used to store information about the chunk that is needed to decompress it. This entails the compression mode and the uncompressed length.
 
