@@ -3,6 +3,7 @@
 #include "compression-context.h"
 #include "types.h"
 #include "util.h"
+#include <assert.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
@@ -10,7 +11,6 @@ size_t compress(const u8 *restrict uncompressed, size_t uncompressedSize, u8 **r
 	CompressionContext *context = malloc(sizeof *context);
 	initCompressionContext(context);
 	size_t compressedSize = 0;
-	const size_t maxIndex = uncompressedSize - 1;
 	size_t position = 0;
 	size_t bufferSize = 0;
 	size_t bufferOffset = 0;
@@ -24,7 +24,11 @@ size_t compress(const u8 *restrict uncompressed, size_t uncompressedSize, u8 **r
 				const bool isMatch = uncompressed[i] == uncompressed[position];
 				if (isMatch) {
 					u16 length = 1;
-					for (size_t j = 1; j < uncompressedSize - position; ++j) {
+					const size_t searchSpace = min(
+						uncompressedSize - position,
+						context->large->capacity
+					);
+					for (size_t j = 1; j < searchSpace; ++j) {
 						if (uncompressed[i + j % (position - i)] != uncompressed[position + j]) {
 							break;
 						}
@@ -34,6 +38,7 @@ size_t compress(const u8 *restrict uncompressed, size_t uncompressedSize, u8 **r
 						bestOffset = i;
 						matchLength = length;
 					}
+					assert(length <= context->large->capacity);
 				}
 			}
 			if (matchLength) {
@@ -53,7 +58,7 @@ size_t compress(const u8 *restrict uncompressed, size_t uncompressedSize, u8 **r
 			lzFailed = true;
 		}
 		if (lzFailed) {
-			const bool checkPairs = position + 3 <= maxIndex;
+			const bool checkPairs = position + 3 < uncompressedSize;
 			const u8 byteA = uncompressed[position];
 			u8 byteB;
 			u16 matched = 1;
