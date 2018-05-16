@@ -10,8 +10,7 @@ int main(void) {
 	};
 	const u8 compressed[] = {
 		100, 1,
-		132, 0, 0,
-		137, 0, 0,
+		142, 0, 0,
 		END
 	};
 	return test(compress, uncompressed, sizeof uncompressed, compressed, sizeof compressed);
