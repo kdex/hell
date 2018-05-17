@@ -1,0 +1,12 @@
+sudo: required
+language: c
+compiler:
+ - clang
+ - gcc
+arch:
+ packages:
+  - meson
+ script:
+  - ".travis/install"
+script:
+  - "curl -s https://raw.githubusercontent.com/mikkeloscar/arch-travis/master/arch-travis.sh | bash"

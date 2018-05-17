@@ -1,4 +1,6 @@
 # hell
+[![Build Status](https://travis-ci.org/kdex/hell.svg?branch=master)](https://travis-ci.org/kdex/hell)
+
 Set of compression and decompression tools for HAL Laboratory games.
 ## Compression
 In order to compress the file `INPUT` and place the result at `OUTPUT`, you can use the `compress` subcommand:

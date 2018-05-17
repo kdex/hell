@@ -1,0 +1,5 @@
+#!/bin/bash
+mkdir build
+cd "$_"
+meson --buildtype=debug -Db_sanitize=address,undefined -Db_lundef=false ..
+ninja test
