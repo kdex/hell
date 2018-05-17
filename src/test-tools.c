@@ -90,7 +90,7 @@ int testFillBytes(
 ) {
 	CompressionContext *restrict context = malloc(sizeof *context);
 	initCompressionContext(context);
-	const size_t compressedSize = compressFillBytes(context, uncompressedSize, byteA, byteB);
+	const size_t compressedSize = compressFillBytes(context, uncompressedSize / 2, byteA, byteB);
 	const int result = validateCompressionResult(context, compressedSize, uncompressed, uncompressedSize, expected, expectedSize);
 	freeCompressionContext(context);
 	return result;

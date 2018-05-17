@@ -51,7 +51,6 @@ u16 compressFillByte(CompressionContext *restrict context, u16 size, u8 byte) {
 	return compressedSize;
 }
 u16 compressFillBytes(CompressionContext *restrict context, u16 size, u8 byteA, u8 byteB) {
-	size /= 2;
 	size_t *restrict offset = &context->allocation->offset;
 	const size_t startOffset = *offset;
 	Header *header;

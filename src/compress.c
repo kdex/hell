@@ -10,10 +10,7 @@
 size_t compress(const u8 *restrict uncompressed, size_t uncompressedSize, u8 **restrict compressed) {
 	CompressionContext *context = malloc(sizeof *context);
 	initCompressionContext(context);
-	size_t compressedSize = 0;
 	size_t position = 0;
-	size_t bufferSize = 0;
-	size_t bufferOffset = 0;
 	while (position < uncompressedSize) {
 		bool lzFailed = false;
 		if (position) {
@@ -42,12 +39,9 @@ size_t compress(const u8 *restrict uncompressed, size_t uncompressedSize, u8 **r
 				}
 			}
 			if (matchLength) {
-				if (bufferSize) {
-					compressedSize += compressUncompressed(context, bufferSize, uncompressed + bufferOffset);
-					bufferSize = 0;
-				}
 				/* Matches found */
-				compressedSize += compressCopy(context, matchLength, COPY_BYTES, bestOffset);
+				flushStash(context, uncompressed);
+				context->compressedSize += compressCopy(context, matchLength, COPY_BYTES, bestOffset);
 				position += matchLength;
 			}
 			else {
@@ -65,16 +59,17 @@ size_t compress(const u8 *restrict uncompressed, size_t uncompressedSize, u8 **r
 			CompressionMode leader = UNCOMPRESSED;
 			{
 				if (checkPairs) {
-					u16 matches = 1;
+					u16 pairs = 1;
 					byteB = uncompressed[position + 1];
 					for (size_t i = position + 2; i < uncompressedSize - 1; i += 2) {
 						if (uncompressed[i] != byteA || uncompressed[i + 1] != byteB) {
 							break;
 						}
-						++matches;
+						++pairs;
 					}
-					if (matched < matches) {
-						matched = 2 * matches;
+					const u16 matches = 2 * pairs;
+					if (matches > 2 && matched < matches) {
+						matched = matches;
 						leader = FILL_BYTES;
 					}
 				}
@@ -105,34 +100,29 @@ size_t compress(const u8 *restrict uncompressed, size_t uncompressedSize, u8 **r
 					leader = FILL_INCREMENTAL_SEQUENCE;
 				}
 			}
-			if (leader != UNCOMPRESSED && bufferSize) {
-				compressedSize += compressUncompressed(context, bufferSize, uncompressed + bufferOffset);
-				bufferSize = 0;
+			if (leader != UNCOMPRESSED) {
+				flushStash(context, uncompressed);
 			}
 			switch (leader) {
 				case FILL_BYTE:
-					compressedSize += compressFillByte(context, matched, byteA);
+					context->compressedSize += compressFillByte(context, matched, byteA);
 					break;
 				case FILL_BYTES:
-					compressedSize += compressFillBytes(context, matched, byteA, byteB);
+					context->compressedSize += compressFillBytes(context, matched / 2, byteA, byteB);
 					break;
 				case FILL_INCREMENTAL_SEQUENCE:
-					compressedSize += compressFillIncrementalSequence(context, matched, byteA);
+					context->compressedSize += compressFillIncrementalSequence(context, matched, byteA);
 					break;
 				default:
-					if (!bufferSize) {
-						bufferOffset = position;
-					}
-					++bufferSize;
+					stash(context, position);
 					break;
 			}
 			position += matched;
 		}
 	}
-	if (bufferSize) {
-		compressedSize += compressUncompressed(context, bufferSize, uncompressed + bufferOffset);
-	}
-	compressedSize += terminateCompressionContext(context);
+	flushStash(context, uncompressed);
+	terminateCompressionContext(context);
+	const size_t compressedSize = context->compressedSize;
 	*compressed = malloc(compressedSize);
 	if (compressedSize) {
 		memcpy(*compressed, context->allocation->buffer, compressedSize);
