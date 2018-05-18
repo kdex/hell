@@ -1,3 +1,4 @@
+#include "constants.h"
 #include "test-tools.h"
 #include "types.h"
 #include <stdlib.h>

@@ -1,5 +1,6 @@
 #include "decompress.h"
 #include "allocation.h"
+#include "constants.h"
 #include "compression-mode.h"
 #include "lut.h"
 #include "types.h"

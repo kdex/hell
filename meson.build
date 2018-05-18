@@ -55,6 +55,7 @@ endforeach
 includes = include_directories('include')
 testDependencies = files(
 	'src/allocation.c',
+	'src/constants.c',
 	'src/compress.c',
 	'src/compression-context.c',
 	'src/compressors.c',
@@ -73,6 +74,7 @@ lut = custom_target('Look-up table',
 )
 executable(name, [
 	'src/allocation.c',
+	'src/constants.c',
 	'src/compress.c',
 	'src/compression-context.c',
 	'src/compressors.c',
@@ -99,6 +101,7 @@ install_headers(
 )
 libraries = both_libraries(name, [
 	'src/allocation.c',
+	'src/constants.c',
 	'src/decompress.c',
 	'src/util.c'
 ], lut,

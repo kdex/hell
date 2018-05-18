@@ -1,4 +1,5 @@
 #include "header.h"
+#include "constants.h"
 #include "types.h"
 #include <stdlib.h>
 void initHeader(Header *restrict header, u8 headerBits, u8 indexBits) {

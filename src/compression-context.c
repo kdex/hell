@@ -1,4 +1,5 @@
 #include "compression-context.h"
+#include "constants.h"
 #include "compressors.h"
 #include "header.h"
 #include "types.h"
