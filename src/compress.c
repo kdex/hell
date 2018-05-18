@@ -1,6 +1,7 @@
 #include "compress.h"
-#include "compressors.h"
+#include "constants.h"
 #include "compression-context.h"
+#include "compressors.h"
 #include "types.h"
 #include "util.h"
 #include <assert.h>
@@ -8,6 +9,10 @@
 #include <stdlib.h>
 #include <string.h>
 size_t compress(const u8 *restrict uncompressed, size_t uncompressedSize, u8 **restrict compressed) {
+	if (uncompressedSize > MAX_PAYLOAD) {
+		*compressed = NULL;
+		return 0;
+	}
 	CompressionContext *context = malloc(sizeof *context);
 	initCompressionContext(context);
 	size_t position = 0;
