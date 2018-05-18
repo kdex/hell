@@ -1,3 +1,4 @@
+#include "constants.h"
 #include "compress.h"
 #include "decompress.h"
 #include "io.h"
@@ -30,11 +31,16 @@ int main(int argc, const char *argv[]) {
 				printFileError(inputFilename, invocation);
 				return EXIT_FAILURE;
 			}
+			if (inputSize > MAX_PAYLOAD) {
+				free(inputFile);
+				fprintf(stderr, "Can not compress %s (%lu bytes), which is larger than maximum allowed file size (%u bytes)\n", inputFilename, inputSize, MAX_PAYLOAD);
+				return EXIT_FAILURE;
+			}
 			u8 *compressed;
 			const size_t size = compress(inputFile, inputSize, &compressed);
 			free(inputFile);
 			if (!size) {
-				fprintf(stderr, "%s doesn't seem to be a valid file.", inputFilename);
+				fprintf(stderr, "%s doesn't seem to be a valid file.\n", inputFilename);
 				return EXIT_FAILURE;
 			}
 			const bool failed = writeFile(outputFilename, compressed, size);
@@ -61,7 +67,7 @@ int main(int argc, const char *argv[]) {
 			const size_t size = decompress(inputFile, inputSize, &decompressed);
 			free(inputFile);
 			if (!size) {
-				fprintf(stderr, "%s doesn't seem to be a valid file.", inputFilename);
+				fprintf(stderr, "%s doesn't seem to be a valid file.\n", inputFilename);
 				return EXIT_FAILURE;
 			}
 			const bool failed = writeFile(outputFilename, decompressed, size);
