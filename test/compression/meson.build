@@ -8,7 +8,8 @@ tests = [
 	'lz-30',
 	'mixed',
 	'overscan',
-	'reversed-bits'
+	'reversed-bits',
+	'reversed-bits-overlap'
 ]
 foreach test : tests
 	testFile = test + '.c'

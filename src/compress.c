@@ -19,130 +19,111 @@ size_t compress(const u8 *restrict uncompressed, size_t uncompressedSize, u8 **r
 	initCompressionContext(context);
 	size_t position = 0;
 	while (position < uncompressedSize) {
-		bool lzFailed = false;
-		if (position) {
-			/* Dictionary exists */
-			size_t bestOffset;
-			u16 matchLength = 0;
-			CompressionMode mode;
-			for (size_t i = 0; i < position; ++i) {
-				const bool isExactMatch = uncompressed[i] == uncompressed[position];
-				const bool isBitReversedMatch = reverses[uncompressed[i]] == uncompressed[position];
-				const size_t searchSpace = min(
-					uncompressedSize - position,
-					context->large->capacity
-				);
-				if (isExactMatch) {
-					u16 length = 1;
-					for (size_t j = 1; j < searchSpace; ++j) {
-						if (uncompressed[i + j % (position - i)] != uncompressed[position + j]) {
-							break;
-						}
-						++length;
+		const u8 byteA = uncompressed[position];
+		u8 byteB = 0;
+		u16 matched = 1;
+		CompressionMode leader = UNCOMPRESSED;
+		{
+			if (position + 3 < uncompressedSize) {
+				u16 pairs = 1;
+				byteB = uncompressed[position + 1];
+				for (size_t i = position + 2; i < uncompressedSize - 1; i += 2) {
+					if (uncompressed[i] != byteA || uncompressed[i + 1] != byteB) {
+						break;
 					}
-					if (matchLength < length) {
-						bestOffset = i;
-						matchLength = length;
-						mode = COPY_BYTES;
-					}
+					++pairs;
 				}
-				if (isBitReversedMatch) {
-					u16 length = 1;
-					for (size_t j = 1; j < searchSpace; ++j) {
-						if (reverses[uncompressed[i + j % (position - i)]] != uncompressed[position + j]) {
-							break;
-						}
-						++length;
-					}
-					if (matchLength < length) {
-						bestOffset = i;
-						matchLength = length;
-						mode = COPY_REVERSED_BITS;
-					}
+				const u16 matches = 2 * pairs;
+				if (matches > 2 && matched < matches) {
+					matched = matches;
+					leader = FILL_BYTES;
 				}
-				assert(matchLength <= context->large->capacity);
-			}
-			if (matchLength > 3) {
-				/* Matches found */
-				flushStash(context, uncompressed);
-				compressCopy(context, matchLength, mode, bestOffset);
-				position += matchLength;
-			}
-			else {
-				lzFailed = true;
 			}
 		}
-		else {
-			lzFailed = true;
-		}
-		if (lzFailed) {
-			const bool checkPairs = position + 3 < uncompressedSize;
-			const u8 byteA = uncompressed[position];
-			u8 byteB;
-			u16 matched = 1;
-			CompressionMode leader = UNCOMPRESSED;
-			{
-				if (checkPairs) {
-					u16 pairs = 1;
-					byteB = uncompressed[position + 1];
-					for (size_t i = position + 2; i < uncompressedSize - 1; i += 2) {
-						if (uncompressed[i] != byteA || uncompressed[i + 1] != byteB) {
-							break;
-						}
-						++pairs;
-					}
-					const u16 matches = 2 * pairs;
-					if (matches > 2 && matched < matches) {
-						matched = matches;
-						leader = FILL_BYTES;
-					}
+		{
+			u16 matches = 0;
+			for (size_t i = position; i < uncompressedSize; ++i) {
+				if (uncompressed[i] != byteA) {
+					break;
 				}
+				++matches;
 			}
-			{
-				u16 matches = 0;
-				for (size_t i = position; i < uncompressedSize; ++i) {
-					if (uncompressed[i] != byteA) {
+			if (matches > 2 && matched < matches) {
+				matched = matches;
+				leader = FILL_BYTE;
+			}
+		}
+		{
+			u16 matches = 0;
+			for (size_t i = 0; i < uncompressedSize - position; ++i) {
+				if (uncompressed[position + i] != (u8) (byteA + i)) {
+					break;
+				}
+				++matches;
+			}
+			if (matches > 2 && matched < matches) {
+				matched = matches;
+				leader = FILL_INCREMENTAL_SEQUENCE;
+			}
+		}
+		size_t bestOffset = 0;
+		for (size_t i = 0; i < position; ++i) {
+			const bool isExactMatch = uncompressed[i] == uncompressed[position];
+			const bool isBitReversedMatch = reverses[uncompressed[i]] == uncompressed[position];
+			const size_t searchSpace = min(uncompressedSize - position, context->large->capacity);
+			if (isExactMatch) {
+				u16 matches = 1;
+				for (size_t j = 1; j < searchSpace; ++j) {
+					if (uncompressed[i + j % (position - i)] != uncompressed[position + j]) {
 						break;
 					}
 					++matches;
 				}
-				if (matches > 2 && matched < matches) {
+				if (matched < matches) {
+					bestOffset = i;
 					matched = matches;
-					leader = FILL_BYTE;
+					leader = COPY_BYTES;
 				}
 			}
-			{
-				u16 matches = 0;
-				for (size_t i = 0; i < uncompressedSize - position; ++i) {
-					if (uncompressed[position + i] != (u8) (byteA + i)) {
+			if (isBitReversedMatch) {
+				u16 matches = 1;
+				for (size_t j = 1; j < searchSpace; ++j) {
+					if (reverses[uncompressed[i + j % (position - i)]] != uncompressed[position + j]) {
 						break;
 					}
 					++matches;
 				}
-				if (matches > 2 && matched < matches) {
+				if (matched < matches) {
+					bestOffset = i;
 					matched = matches;
-					leader = FILL_INCREMENTAL_SEQUENCE;
+					leader = COPY_REVERSED_BITS;
 				}
 			}
-			if (leader != UNCOMPRESSED) {
-				flushStash(context, uncompressed);
-			}
-			switch (leader) {
-				case FILL_BYTE:
-					compressFillByte(context, matched, byteA);
-					break;
-				case FILL_BYTES:
-					compressFillBytes(context, matched / 2, byteA, byteB);
-					break;
-				case FILL_INCREMENTAL_SEQUENCE:
-					compressFillIncrementalSequence(context, matched, byteA);
-					break;
-				default:
-					stash(context, position);
-					break;
-			}
-			position += matched;
+			assert(matched <= context->large->capacity);
 		}
+		if (leader != UNCOMPRESSED) {
+			flushStash(context, uncompressed);
+		}
+		switch (leader) {
+			case FILL_BYTE:
+				compressFillByte(context, matched, byteA);
+				break;
+			case FILL_BYTES:
+				compressFillBytes(context, matched / 2, byteA, byteB);
+				break;
+			case FILL_INCREMENTAL_SEQUENCE:
+				compressFillIncrementalSequence(context, matched, byteA);
+				break;
+			case COPY_BYTES:
+			case COPY_REVERSED_BITS:
+			case COPY_REVERSED_BYTES:
+				compressCopy(context, matched, leader, bestOffset);
+				break;
+			default:
+				stash(context, position);
+				break;
+		}
+		position += matched;
 	}
 	flushStash(context, uncompressed);
 	terminateCompressionContext(context);
