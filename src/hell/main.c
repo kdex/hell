@@ -43,6 +43,7 @@ int main(int argc, const char *argv[]) {
 				fprintf(stderr, "%s doesn't seem to be a valid file.\n", inputFilename);
 				return EXIT_FAILURE;
 			}
+			printf("Writing file of size %u\n", size);
 			const bool failed = writeFile(outputFilename, compressed, size);
 			free(compressed);
 			if (failed) {

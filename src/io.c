@@ -25,7 +25,7 @@ size_t readFile(const char *filename, u8 **buffer) {
 	fclose(file);
 	return size;
 }
-bool writeFile(const char *filename, const u8 *buffer, u8 bufferLength) {
+bool writeFile(const char *filename, const u8 *buffer, size_t bufferLength) {
 	FILE *file = fopen(filename, "wb");
 	if (!file) {
 		return true;

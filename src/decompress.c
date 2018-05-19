@@ -13,10 +13,10 @@ size_t decompress(const u8 *restrict compressed, size_t compressedSize, u8 **res
 	Allocation *restrict allocation = malloc(sizeof *allocation);
 	initAllocation(allocation);
 	/* TODO: Figure out the maximum sizes */
-	size_t bytesRead = 0;
-	size_t *bytesWritten = &allocation->written;
-	while (bytesRead < compressedSize) {
-		const u8 header = compressed[bytesRead++];
+	size_t read = 0;
+	size_t *written = &allocation->written;
+	while (read < compressedSize) {
+		const u8 header = compressed[read++];
 		if (header == END) {
 			break;
 		}
@@ -30,71 +30,71 @@ size_t decompress(const u8 *restrict compressed, size_t compressedSize, u8 **res
 		else {
 			mode = (header & 0x1c) >> 2;
 			if (mode != EXTEND_HEADER) {
-				storedLength = ((header & 3) << 8) + compressed[bytesRead++] + 1;
+				storedLength = ((header & 3) << 8) + compressed[read++] + 1;
 			}
 		}
 		const u16 sourceLength = storedLength * (mode == FILL_BYTES ? 2 : 1);
 		u16 copyOffset = 0;
 		if (mode >= COPY_BYTES && mode < EXTEND_HEADER) {
-			const u8 msb = compressed[bytesRead++];
-			const u8 lsb = compressed[bytesRead++];
+			const u8 msb = compressed[read++];
+			const u8 lsb = compressed[read++];
 			copyOffset = msb << 8 | lsb;
 		}
 		reserve(allocation, sourceLength);
 		switch (mode) {
 			case UNCOMPRESSED: {
-				memcpy(allocation->buffer + *bytesWritten, compressed + bytesRead, storedLength);
-				bytesRead += storedLength;
-				*bytesWritten += storedLength;
+				memcpy(allocation->buffer + *written, compressed + read, storedLength);
+				read += storedLength;
+				*written += storedLength;
 				break;
 			}
 			case FILL_BYTE: {
-				memset(allocation->buffer + *bytesWritten, compressed[bytesRead++], storedLength);
-				*bytesWritten += storedLength;
+				memset(allocation->buffer + *written, compressed[read++], storedLength);
+				*written += storedLength;
 				break;
 			}
 			case FILL_BYTES: {
-				const u8 left = compressed[bytesRead++];
-				const u8 right = compressed[bytesRead++];
+				const u8 left = compressed[read++];
+				const u8 right = compressed[read++];
 				for (size_t i = 0; i < storedLength; ++i) {
-					allocation->buffer[(*bytesWritten)++] = left;
-					allocation->buffer[(*bytesWritten)++] = right;
+					allocation->buffer[(*written)++] = left;
+					allocation->buffer[(*written)++] = right;
 				}
 				break;
 			}
 			case FILL_INCREMENTAL_SEQUENCE: {
-				const u8 seed = compressed[bytesRead++];
+				const u8 seed = compressed[read++];
 				for (size_t i = 0; i < storedLength; ++i) {
-					allocation->buffer[(*bytesWritten)++] = seed + i;
+					allocation->buffer[(*written)++] = seed + i;
 				}
 				break;
 			}
 			case COPY_BYTES: {
 				for (size_t i = 0; i < storedLength; ++i) {
-					allocation->buffer[(*bytesWritten)++] = allocation->buffer[copyOffset + i];
+					allocation->buffer[(*written)++] = allocation->buffer[copyOffset + i];
 				}
 				break;
 			}
 			case COPY_REVERSED_BITS: {
 				for (size_t i = 0; i < storedLength; ++i) {
-					allocation->buffer[(*bytesWritten)++] = reverses[allocation->buffer[copyOffset + i]];
+					allocation->buffer[(*written)++] = reverses[allocation->buffer[copyOffset + i]];
 				}
 				break;
 			}
 			case COPY_REVERSED_BYTES: {
 				for (size_t i = 0; i < storedLength; ++i) {
-					allocation->buffer[(*bytesWritten)++] = allocation->buffer[copyOffset - i];
+					allocation->buffer[(*written)++] = allocation->buffer[copyOffset - i];
 				}
 				break;
 			}
 		}
 	}
-	assert(bytesRead == compressedSize);
-	if (allocation->size > *bytesWritten) {
-		resize(allocation, *bytesWritten);
+	assert(read == compressedSize);
+	const size_t size = *written;
+	if (allocation->size > size) {
+		resize(allocation, size);
 	}
-	const size_t size = allocation->size;
-	if (size && bytesRead == compressedSize) {
+	if (size && read == compressedSize) {
 		*decompressed = malloc(size);
 		memcpy(*decompressed, allocation->buffer, size);
 	}
