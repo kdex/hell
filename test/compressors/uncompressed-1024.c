@@ -10,5 +10,5 @@ int main(void) {
 		uncompressed[i] = i;
 		compressed[i + 2] = i;
 	}
-	return testUncompressed(uncompressed, sizeof uncompressed, compressed, sizeof compressed);
+	testUncompressed(uncompressed, sizeof uncompressed, compressed, sizeof compressed);
 }

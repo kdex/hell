@@ -2,36 +2,24 @@
 #include "compress.h"
 #include "compression-mode.h"
 #include "decompress.h"
+#include "io.h"
 #include "types.h"
-#include <stdarg.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
-int fail(const char *restrict format, ...) {
-	va_list args;
-	va_start(args, format);
-	vfprintf(stderr, format, args);
-	va_end(args);
-	return EXIT_FAILURE;
-}
-int test(size_t (*fn)(const u8 *restrict payload, size_t payloadSize, u8 **restrict destination), const u8 *restrict payload, size_t payloadSize, const u8 *restrict expected, size_t expectedSize) {
+void test(size_t (*fn)(const u8 *restrict payload, size_t payloadSize, u8 **restrict destination), const u8 *restrict payload, size_t payloadSize, const u8 *restrict expected, size_t expectedSize) {
 	u8 *buffer;
 	const size_t actualSize = fn(payload, payloadSize, &buffer);
-	int result = compare(buffer, actualSize, expected, expectedSize);
-	if (result == EXIT_FAILURE) {
-		free(buffer);
-		return result;
-	}
-	else if (fn == compress) {
+	compare(buffer, actualSize, expected, expectedSize);
+	if (fn == compress) {
 		u8 *decompressed;
 		const size_t decompressedSize = decompress(buffer, actualSize, &decompressed);
-		result = compare(decompressed, decompressedSize, payload, payloadSize);
+		compare(decompressed, decompressedSize, payload, payloadSize);
 		free(decompressed);
 	}
 	free(buffer);
-	return result;
 }
-int validateCompressionResult(
+void validateCompressionResult(
 	CompressionContext *restrict context,
 	size_t compressedSize,
 	const u8 *restrict uncompressed,
@@ -39,17 +27,13 @@ int validateCompressionResult(
 	const u8 *restrict expected,
 	size_t expectedSize
 ) {
-	int result = EXIT_FAILURE;
 	if (compressedSize) {
 		/*
 		* Compressors write straight into the buffer, hence we should resize the buffer to its actual size here.
 		* Usually, this is done at the end of `compress`.
 		*/
 		resize(context->allocation, compressedSize);
-		result = compare(context->allocation->buffer, compressedSize, expected, expectedSize);
-	}
-	if (result == EXIT_FAILURE) {
-		return result;
+		compare(context->allocation->buffer, compressedSize, expected, expectedSize);
 	}
 	/*
 	* Lastly, we decompress the compressed data and compare it against the uncompressed payload.
@@ -58,12 +42,11 @@ int validateCompressionResult(
 	if (uncompressed) {
 		u8 *decompressed;
 		const size_t decompressedSize = decompress(context->allocation->buffer, compressedSize, &decompressed);
-		result = compare(decompressed, decompressedSize, uncompressed, uncompressedSize);
+		compare(decompressed, decompressedSize, uncompressed, uncompressedSize);
 		free(decompressed);
 	}
-	return result;
 }
-int testUncompressed(
+void testUncompressed(
 	const u8 *restrict uncompressed,
 	u16 uncompressedSize,
 	const u8 *restrict expected,
@@ -72,11 +55,10 @@ int testUncompressed(
 	CompressionContext *restrict context = malloc(sizeof *context);
 	initCompressionContext(context);
 	const size_t compressedSize = compressUncompressed(context, uncompressedSize, uncompressed);
-	const int result = validateCompressionResult(context, compressedSize, uncompressed, uncompressedSize, expected, expectedSize);
+	validateCompressionResult(context, compressedSize, uncompressed, uncompressedSize, expected, expectedSize);
 	freeCompressionContext(context);
-	return result;
 }
-int testFillByte(
+void testFillByte(
 	const u8 *restrict uncompressed,
 	u16 uncompressedSize,
 	const u8 *restrict expected,
@@ -86,11 +68,10 @@ int testFillByte(
 	CompressionContext *restrict context = malloc(sizeof *context);
 	initCompressionContext(context);
 	const size_t compressedSize = compressFillByte(context, uncompressedSize, byte);
-	const int result = validateCompressionResult(context, compressedSize, uncompressed, uncompressedSize, expected, expectedSize);
+	validateCompressionResult(context, compressedSize, uncompressed, uncompressedSize, expected, expectedSize);
 	freeCompressionContext(context);
-	return result;
 }
-int testFillBytes(
+void testFillBytes(
 	const u8 *restrict uncompressed,
 	u16 uncompressedSize,
 	const u8 *restrict expected,
@@ -101,11 +82,10 @@ int testFillBytes(
 	CompressionContext *restrict context = malloc(sizeof *context);
 	initCompressionContext(context);
 	const size_t compressedSize = compressFillBytes(context, uncompressedSize / 2, byteA, byteB);
-	const int result = validateCompressionResult(context, compressedSize, uncompressed, uncompressedSize, expected, expectedSize);
+	validateCompressionResult(context, compressedSize, uncompressed, uncompressedSize, expected, expectedSize);
 	freeCompressionContext(context);
-	return result;
 }
-int testFillIncrementalSequence(
+void testFillIncrementalSequence(
 	const u8 *restrict uncompressed,
 	u16 uncompressedSize,
 	const u8 *restrict expected,
@@ -115,11 +95,10 @@ int testFillIncrementalSequence(
 	CompressionContext *restrict context = malloc(sizeof *context);
 	initCompressionContext(context);
 	const size_t compressedSize = compressFillIncrementalSequence(context, uncompressedSize, seed);
-	const int result = validateCompressionResult(context, compressedSize, uncompressed, uncompressedSize, expected, expectedSize);
+	validateCompressionResult(context, compressedSize, uncompressed, uncompressedSize, expected, expectedSize);
 	freeCompressionContext(context);
-	return result;
 }
-int testCopy(
+void testCopy(
 	const u8 *restrict uncompressed,
 	u16 uncompressedSize,
 	const u8 *restrict expected,
@@ -130,18 +109,17 @@ int testCopy(
 	CompressionContext *restrict context = malloc(sizeof *context);
 	initCompressionContext(context);
 	const size_t compressedSize = compressCopy(context, uncompressedSize, mode, copyOffset);
-	const int result = validateCompressionResult(context, compressedSize, uncompressed, uncompressedSize, expected, expectedSize);
+	validateCompressionResult(context, compressedSize, uncompressed, uncompressedSize, expected, expectedSize);
 	freeCompressionContext(context);
-	return result;
 }
-int compare(
+void compare(
 	const u8 *restrict actual,
 	size_t actualSize,
 	const u8 *restrict expected,
 	size_t expectedSize
 ) {
 	if (actualSize != expectedSize) {
-		return fail("Size mismatch. Expected %i, got %i\n", expectedSize, actualSize);
+		fail("Size mismatch. Expected %i, got %i\n", expectedSize, actualSize);
 	}
 	if (memcmp(expected, actual, actualSize)) {
 		char *message = calloc(1, 1);
@@ -233,11 +211,8 @@ int compare(
 			}
 		}
 		if (mismatch) {
-			const int value = fail("\n%s", message);
-			free(message);
-			return value;
+			fail("\n%s", message);
 		}
 		free(message);
 	}
-	return EXIT_SUCCESS;
 }

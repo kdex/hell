@@ -11,5 +11,5 @@ int main(void) {
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 		1, 1, 1
 	};
-	return test(decompress, compressed, sizeof compressed, decompressed, sizeof decompressed);
+	test(decompress, compressed, sizeof compressed, decompressed, sizeof decompressed);
 }

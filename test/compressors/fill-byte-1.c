@@ -6,9 +6,6 @@ int main(void) {
 		const u8 compressed[] = {
 			32, i
 		};
-		const int value = testFillByte(uncompressed, sizeof uncompressed, compressed, sizeof compressed, i);
-		if (value == EXIT_FAILURE) {
-			return value;
-		}
+		testFillByte(uncompressed, sizeof uncompressed, compressed, sizeof compressed, i);
 	}
 }

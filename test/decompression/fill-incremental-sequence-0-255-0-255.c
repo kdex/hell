@@ -12,5 +12,5 @@ int main(void) {
 		236, 255, 0,
 		END
 	};
-	return test(decompress, compressed, sizeof compressed, decompressed, sizeof decompressed);
+	test(decompress, compressed, sizeof compressed, decompressed, sizeof decompressed);
 }

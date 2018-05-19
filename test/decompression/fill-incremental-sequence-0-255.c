@@ -10,5 +10,5 @@ int main(void) {
 	const u8 compressed[] = {
 		236, 255, 0, END
 	};
-	return test(decompress, compressed, sizeof compressed, decompressed, sizeof decompressed);
+	test(decompress, compressed, sizeof compressed, decompressed, sizeof decompressed);
 }

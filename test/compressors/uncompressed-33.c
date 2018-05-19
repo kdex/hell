@@ -15,5 +15,5 @@ int main(void) {
 		21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
 		END, 32, END
 	};
-	return testUncompressed(uncompressed, sizeof uncompressed, compressed, sizeof compressed);
+	testUncompressed(uncompressed, sizeof uncompressed, compressed, sizeof compressed);
 }

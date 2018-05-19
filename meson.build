@@ -61,6 +61,7 @@ testDependencies = files(
 	'src/compressors.c',
 	'src/decompress.c',
 	'src/header.c',
+	'src/io.c',
 	'src/test-tools.c',
 	'src/util.c',
 )

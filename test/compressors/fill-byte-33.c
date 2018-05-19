@@ -10,5 +10,5 @@ int main(void) {
 	const u8 compressed[] = {
 		228, size - 1, byte
 	};
-	return testFillByte(uncompressed, sizeof uncompressed, compressed, sizeof compressed, byte);
+	testFillByte(uncompressed, sizeof uncompressed, compressed, sizeof compressed, byte);
 }

@@ -10,9 +10,6 @@ int main(void) {
 		const u8 compressed[] = {
 			236, 32, seed
 		};
-		const int value = testFillIncrementalSequence(uncompressed, sizeof uncompressed, compressed, sizeof compressed, seed);
-		if (value == EXIT_FAILURE) {
-			return value;
-		}
+		testFillIncrementalSequence(uncompressed, sizeof uncompressed, compressed, sizeof compressed, seed);
 	}
 }

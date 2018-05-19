@@ -28,28 +28,23 @@ int main(int argc, const char *argv[]) {
 			const char *outputFilename = argv[3];
 			const size_t inputSize = readFile(inputFilename, &inputFile);
 			if (!inputFile) {
-				printFileError(inputFilename, invocation);
-				return EXIT_FAILURE;
+				failWithFileError(inputFilename, invocation);
 			}
 			if (inputSize > MAX_PAYLOAD) {
-				free(inputFile);
-				fprintf(stderr, "Can not compress %s (%lu bytes), which is larger than maximum allowed file size (%u bytes)\n", inputFilename, inputSize, MAX_PAYLOAD);
-				return EXIT_FAILURE;
+				fail("Can not compress %s (%lu bytes), which is larger than maximum allowed file size (%u bytes)\n", inputFilename, inputSize, MAX_PAYLOAD);
 			}
 			u8 *compressed;
 			const size_t size = compress(inputFile, inputSize, &compressed);
 			free(inputFile);
 			if (!size) {
-				fprintf(stderr, "%s doesn't seem to be a valid file.\n", inputFilename);
-				return EXIT_FAILURE;
+				fail("%s doesn't seem to be a valid file.\n", inputFilename);
 			}
 			float savings = 100 * (1 - (float) size / inputSize);
 			printf("Reduced %s by %li bytes (%.2f %%)\n", inputFilename, inputSize - size, savings);
 			const bool failed = writeFile(outputFilename, compressed, size);
 			free(compressed);
 			if (failed) {
-				printFileError(outputFilename, invocation);
-				return EXIT_FAILURE;
+				failWithFileError(outputFilename, invocation);
 			}
 		}
 		else if (!strcmp(mode, "decompress")) {
@@ -62,21 +57,18 @@ int main(int argc, const char *argv[]) {
 			const char *outputFilename = argv[3];
 			const size_t inputSize = readFile(inputFilename, &inputFile);
 			if (!inputFile) {
-				printFileError(inputFilename, invocation);
-				return EXIT_FAILURE;
+				failWithFileError(inputFilename, invocation);
 			}
 			u8 *decompressed;
 			const size_t size = decompress(inputFile, inputSize, &decompressed);
 			free(inputFile);
 			if (!size) {
-				fprintf(stderr, "%s doesn't seem to be a valid file.\n", inputFilename);
-				return EXIT_FAILURE;
+				fail("%s doesn't seem to be a valid file.\n", inputFilename);
 			}
 			const bool failed = writeFile(outputFilename, decompressed, size);
 			free(decompressed);
 			if (failed) {
-				printFileError(outputFilename, invocation);
-				return EXIT_FAILURE;
+				failWithFileError(outputFilename, invocation);
 			}
 		}
 		else {

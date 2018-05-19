@@ -5,7 +5,7 @@
 #include "decompress.h"
 #include "types.h"
 #include <stdlib.h>
-int test(
+void test(
 	size_t (*fn)(
 		const u8 *restrict payload,
 		size_t payloadSize,
@@ -16,20 +16,20 @@ int test(
 	const u8 *restrict expected,
 	size_t expectedSize
 );
-int testUncompressed(
+void testUncompressed(
 	const u8 *restrict uncompressed,
 	u16 uncompressedSize,
 	const u8 *restrict expected,
 	u16 expectedSize
 );
-int testFillByte(
+void testFillByte(
 	const u8 *restrict uncompressed,
 	u16 uncompressedSize,
 	const u8 *restrict expected,
 	u16 expectedSize,
 	u8 byte
 );
-int testFillBytes(
+void testFillBytes(
 	const u8 *restrict uncompressed,
 	u16 uncompressedSize,
 	const u8 *restrict expected,
@@ -37,14 +37,14 @@ int testFillBytes(
 	u8 byteA,
 	u8 byteB
 );
-int testFillIncrementalSequence(
+void testFillIncrementalSequence(
 	const u8 *restrict uncompressed,
 	u16 uncompressedSize,
 	const u8 *restrict expected,
 	u16 expectedSize,
 	u8 seed
 );
-int testCopy(
+void testCopy(
 	const u8 *restrict uncompressed,
 	u16 uncompressedSize,
 	const u8 *restrict expected,
@@ -52,5 +52,4 @@ int testCopy(
 	CompressionMode mode,
 	u16 copyOffset
 );
-int compare(const u8 *restrict actual, size_t actualSize, const u8 *restrict expected, size_t expectedSize);
-int fail(const char *format, ...);
+void compare(const u8 *restrict actual, size_t actualSize, const u8 *restrict expected, size_t expectedSize);
