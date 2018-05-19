@@ -17,7 +17,17 @@ int fail(const char *restrict format, ...) {
 int test(size_t (*fn)(const u8 *restrict payload, size_t payloadSize, u8 **restrict destination), const u8 *restrict payload, size_t payloadSize, const u8 *restrict expected, size_t expectedSize) {
 	u8 *buffer;
 	const size_t actualSize = fn(payload, payloadSize, &buffer);
-	const int result = compare(buffer, actualSize, expected, expectedSize);
+	int result = compare(buffer, actualSize, expected, expectedSize);
+	if (result == EXIT_FAILURE) {
+		free(buffer);
+		return result;
+	}
+	else if (fn == compress) {
+		u8 *decompressed;
+		const size_t decompressedSize = decompress(buffer, actualSize, &decompressed);
+		result = compare(decompressed, decompressedSize, payload, payloadSize);
+		free(decompressed);
+	}
 	free(buffer);
 	return result;
 }

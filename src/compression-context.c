@@ -9,8 +9,7 @@ void initCompressionContext(CompressionContext *restrict context) {
 		.small = malloc(sizeof (Header)),
 		.large = malloc(sizeof (Header)),
 		.stashSize = 0,
-		.stashOffset = 0,
-		.compressedSize = 0
+		.stashOffset = 0
 	};
 	initAllocation(context->allocation);
 	initSmallHeader(context->small);
@@ -24,14 +23,14 @@ void stash(CompressionContext *restrict context, size_t stashOffset) {
 }
 void flushStash(CompressionContext *restrict context, const u8 *uncompressed) {
 	if (context->stashSize) {
-		context->compressedSize += compressUncompressed(context, context->stashSize, uncompressed + context->stashOffset);
+		compressUncompressed(context, context->stashSize, uncompressed + context->stashOffset);
 		context->stashSize = 0;
 	}
 }
 void terminateCompressionContext(CompressionContext *context) {
-	resize(context->allocation, context->allocation->offset + 1);
-	context->allocation->buffer[context->allocation->offset] = END;
-	++context->compressedSize;
+	resize(context->allocation, context->allocation->written + 1);
+	context->allocation->buffer[context->allocation->written] = END;
+	++context->allocation->written;
 }
 void freeCompressionContext(CompressionContext *restrict context) {
 	freeAllocation(context->allocation);

@@ -3,7 +3,7 @@
 #include <stdlib.h>
 typedef struct {
 	size_t size;
-	size_t offset;
+	size_t written;
 	u8 *buffer;
 } Allocation;
 void initAllocation(Allocation *allocation);

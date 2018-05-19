@@ -7,7 +7,6 @@ typedef struct {
 	Header *restrict large;
 	u16 stashSize;
 	u16 stashOffset;
-	size_t compressedSize;
 } CompressionContext;
 void initCompressionContext(CompressionContext *restrict context);
 void stash(CompressionContext *restrict context, size_t position);

@@ -46,7 +46,7 @@ size_t compress(const u8 *restrict uncompressed, size_t uncompressedSize, u8 **r
 			if (matchLength) {
 				/* Matches found */
 				flushStash(context, uncompressed);
-				context->compressedSize += compressCopy(context, matchLength, COPY_BYTES, bestOffset);
+				compressCopy(context, matchLength, COPY_BYTES, bestOffset);
 				position += matchLength;
 			}
 			else {
@@ -110,13 +110,13 @@ size_t compress(const u8 *restrict uncompressed, size_t uncompressedSize, u8 **r
 			}
 			switch (leader) {
 				case FILL_BYTE:
-					context->compressedSize += compressFillByte(context, matched, byteA);
+					compressFillByte(context, matched, byteA);
 					break;
 				case FILL_BYTES:
-					context->compressedSize += compressFillBytes(context, matched / 2, byteA, byteB);
+					compressFillBytes(context, matched / 2, byteA, byteB);
 					break;
 				case FILL_INCREMENTAL_SEQUENCE:
-					context->compressedSize += compressFillIncrementalSequence(context, matched, byteA);
+					compressFillIncrementalSequence(context, matched, byteA);
 					break;
 				default:
 					stash(context, position);
@@ -127,7 +127,7 @@ size_t compress(const u8 *restrict uncompressed, size_t uncompressedSize, u8 **r
 	}
 	flushStash(context, uncompressed);
 	terminateCompressionContext(context);
-	const size_t compressedSize = context->compressedSize;
+	const size_t compressedSize = context->allocation->written;
 	*compressed = malloc(compressedSize);
 	if (compressedSize) {
 		memcpy(*compressed, context->allocation->buffer, compressedSize);
