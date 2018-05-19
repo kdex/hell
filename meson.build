@@ -65,7 +65,10 @@ testDependencies = files(
 	'src/test-tools.c',
 	'src/util.c',
 )
-makeLut = executable('make-lut', 'src/make-lut/main.c',
+makeLut = executable('make-lut', [
+	'src/make-lut/main.c',
+	'src/constants.c'
+],
 	c_args: cflags,
 	include_directories: includes
 )

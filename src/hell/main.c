@@ -39,7 +39,7 @@ int main(int argc, const char *argv[]) {
 			if (!size) {
 				fail("%s doesn't seem to be a valid file.\n", inputFilename);
 			}
-			float savings = 100 * (1 - (float) size / inputSize);
+			const float savings = 100 * (1 - (float) size / inputSize);
 			printf("Reduced %s by %li bytes (%.2f %%)\n", inputFilename, inputSize - size, savings);
 			const bool failed = writeFile(outputFilename, compressed, size);
 			free(compressed);
