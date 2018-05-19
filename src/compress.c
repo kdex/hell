@@ -43,7 +43,7 @@ size_t compress(const u8 *restrict uncompressed, size_t uncompressedSize, u8 **r
 					assert(length <= context->large->capacity);
 				}
 			}
-			if (matchLength) {
+			if (matchLength > 3) {
 				/* Matches found */
 				flushStash(context, uncompressed);
 				compressCopy(context, matchLength, COPY_BYTES, bestOffset);
@@ -87,7 +87,7 @@ size_t compress(const u8 *restrict uncompressed, size_t uncompressedSize, u8 **r
 					}
 					++matches;
 				}
-				if (matched < matches) {
+				if (matches > 2 && matched < matches) {
 					matched = matches;
 					leader = FILL_BYTE;
 				}
@@ -100,7 +100,7 @@ size_t compress(const u8 *restrict uncompressed, size_t uncompressedSize, u8 **r
 					}
 					++matches;
 				}
-				if (matched < matches) {
+				if (matches > 2 && matched < matches) {
 					matched = matches;
 					leader = FILL_INCREMENTAL_SEQUENCE;
 				}

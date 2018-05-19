@@ -9,9 +9,10 @@ int main(void) {
 		'c',
 	};
 	const u8 compressed[] = {
-		2, 'a', ' ', 'b',
-		128, 0, 1,
-		0, 'c',
+		4,
+		'a', ' ',
+		'b', ' ',
+		'c',
 		END
 	};
 	return test(compress, uncompressed, sizeof uncompressed, compressed, sizeof compressed);

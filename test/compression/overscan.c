@@ -9,9 +9,8 @@ int main(void) {
 		'O', 'v', 'e', 'r', 's', 'c', 'a', 'n'
 	};
 	const u8 compressed[] = {
-		2, 'O', 'v', 'e',
-		97, 'r',
-		2, 'c', 'a', 'n',
+		7,
+		'O', 'v', 'e', 'r', 's', 'c', 'a', 'n',
 		143, 0, 0,
 		END
 	};
