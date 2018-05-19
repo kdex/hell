@@ -23,8 +23,8 @@ HAL Laboratory's lossless compression format is the result of mixing different c
    2   | Run-length-encoded (repeating byte pair)
    3   | Run-length-encoded (incrementally growing byte)
    4   | LZ77 for exact matches
-   5   | LZ77 for exact matches in reversed order
-   6   | LZ77 for bit-reversed matches
+   5   | LZ77 for bit-reversed matches
+   6   | LZ77 for exact matches in reversed order
    7   | Meta mode, indicates large header
 ### Chunks
 The input bytes are compressed into chunks; one compression mode will result in one compressed chunk, which consists of a header and a payload. After the chunk stream, there will be a compression terminator symbol (`0xff`) denoting that no more chunks will follow. It should be noted that this terminator **is** allowed as part of a chunk's payload.

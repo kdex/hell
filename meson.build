@@ -69,7 +69,7 @@ makeLut = executable('make-lut', 'src/make-lut/main.c',
 	include_directories: includes
 )
 lut = custom_target('Look-up table',
-	output: 'lut.h',
+	output: 'lut.c',
 	command: [makeLut, '@OUTPUT@']
 )
 executable(name, [

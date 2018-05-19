@@ -1,7 +1,9 @@
 #include "compress.h"
 #include "constants.h"
 #include "compression-context.h"
+#include "compression-mode.h"
 #include "compressors.h"
+#include "lut.h"
 #include "types.h"
 #include "util.h"
 #include <assert.h>
@@ -22,14 +24,16 @@ size_t compress(const u8 *restrict uncompressed, size_t uncompressedSize, u8 **r
 			/* Dictionary exists */
 			size_t bestOffset;
 			u16 matchLength = 0;
+			CompressionMode mode;
 			for (size_t i = 0; i < position; ++i) {
-				const bool isMatch = uncompressed[i] == uncompressed[position];
-				if (isMatch) {
+				const bool isExactMatch = uncompressed[i] == uncompressed[position];
+				const bool isBitReversedMatch = reverses[uncompressed[i]] == uncompressed[position];
+				const size_t searchSpace = min(
+					uncompressedSize - position,
+					context->large->capacity
+				);
+				if (isExactMatch) {
 					u16 length = 1;
-					const size_t searchSpace = min(
-						uncompressedSize - position,
-						context->large->capacity
-					);
 					for (size_t j = 1; j < searchSpace; ++j) {
 						if (uncompressed[i + j % (position - i)] != uncompressed[position + j]) {
 							break;
@@ -39,14 +43,29 @@ size_t compress(const u8 *restrict uncompressed, size_t uncompressedSize, u8 **r
 					if (matchLength < length) {
 						bestOffset = i;
 						matchLength = length;
+						mode = COPY_BYTES;
 					}
-					assert(length <= context->large->capacity);
 				}
+				if (isBitReversedMatch) {
+					u16 length = 1;
+					for (size_t j = 1; j < searchSpace; ++j) {
+						if (reverses[uncompressed[i + j % (position - i)]] != uncompressed[position + j]) {
+							break;
+						}
+						++length;
+					}
+					if (matchLength < length) {
+						bestOffset = i;
+						matchLength = length;
+						mode = COPY_REVERSED_BITS;
+					}
+				}
+				assert(matchLength <= context->large->capacity);
 			}
 			if (matchLength > 3) {
 				/* Matches found */
 				flushStash(context, uncompressed);
-				compressCopy(context, matchLength, COPY_BYTES, bestOffset);
+				compressCopy(context, matchLength, mode, bestOffset);
 				position += matchLength;
 			}
 			else {
