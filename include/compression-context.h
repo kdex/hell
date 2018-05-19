@@ -1,12 +1,12 @@
 #pragma once
 #include "allocation.h"
 #include "header.h"
+typedef struct AllocationInternals AllocationInternals;
 typedef struct {
 	Allocation *restrict allocation;
 	Header *restrict small;
 	Header *restrict large;
-	u16 stashSize;
-	u16 stashOffset;
+	AllocationInternals *restrict internals;
 } CompressionContext;
 void initCompressionContext(CompressionContext *restrict context);
 void stash(CompressionContext *restrict context, size_t position);

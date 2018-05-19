@@ -91,9 +91,7 @@ size_t decompress(const u8 *restrict compressed, size_t compressedSize, u8 **res
 	}
 	assert(read == compressedSize);
 	const size_t size = *written;
-	if (allocation->size > size) {
-		resize(allocation, size);
-	}
+	resize(allocation, size);
 	if (size && read == compressedSize) {
 		*decompressed = malloc(size);
 		memcpy(*decompressed, allocation->buffer, size);
