@@ -3,8 +3,8 @@ BUILD_DIRECTORY="build"
 # First, build the project in debug mode
 mkdir "$BUILD_DIRECTORY"
 cd "$BUILD_DIRECTORY"
-meson --buildtype=debug -Db_sanitize=address,undefined -Db_lundef=false ..
-ninja test
+cmake -DCMAKE_BUILD_TYPE=Debug ..
+make -j test
 # If everything went well, we will test the project without any instrumentation and full optimization
-rm -rf * && meson --buildtype=release ..
-ninja test
+rm -rf * && cmake -DCMAKE_BUILD_TYPE=Release ..
+make -j test
