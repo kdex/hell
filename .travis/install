@@ -1,12 +1,14 @@
 #!/bin/bash
 BUILD_DIRECTORY="build"
+function runTests {
+	make -j
+	CTEST_OUTPUT_ON_FAILURE=1 make -j test
+}
 # First, build the project in debug mode
 mkdir "$BUILD_DIRECTORY"
 cd "$BUILD_DIRECTORY"
 cmake -DCMAKE_BUILD_TYPE=Debug ..
-make -j
-make -j test
+runTests
 # If everything went well, we will test the project without any instrumentation and full optimization
 rm -rf * && cmake -DCMAKE_BUILD_TYPE=Release ..
-make -j
-make -j test
+runTests

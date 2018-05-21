@@ -10,6 +10,7 @@ foreach(TEST
 	overscan
 	reversed-bits
 	reversed-bits-overlap
+	reversed-bytes
 )
 	set(NAME compression-${TEST})
 	add_executable(${NAME}
