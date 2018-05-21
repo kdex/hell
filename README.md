@@ -67,32 +67,31 @@ Effectively, this limits the input file size to **2¹⁶ B = 64 KiB**.
 
 This also implies that the "sliding window" you may know from LZ77 can have a maximum size of `2¹⁶ B = 64 KiB`, except that this "sliding window" *does not* actually slide, since its size will always cover the entire input file.
 ## Development
-This project uses the Meson build system.
+This project uses the CMake build system.
 ### How to build
 In the project root, run:
 ```bash
 $ mkdir build
 $ cd $_
-$ meson .. && ninja
+$ cmake .. && make -j
 ```
 This will build the following assets for you:
 - `hell` binary
 - a static (.a) and shared (.so) library
 - headers to include into your projects
-- a package configuration for `pkgconfig`
 
 ### Installation
 Installing `hell` will make the aforementioned assets globally available. In the build directory, run:
 ```bash
-$ ninja install
+$ make -j install
 ```
-### Uninstallation
-If you don't need `hell` anymore, you can remove all the aforementioned assets like so:
+If you would like the assets to be installed in a local directory, you should instead invoke `cmake` like so:
 ```bash
-$ ninja uninstall
+$ cmake -DCMAKE_INSTALL_PREFIX=YOUR_PREFIX_HERE ..
+$ make -j install
 ```
 ### Testing
 In the build directory, you can run the unit tests via:
 ```bash
-$ ninja test
+$ make -j test
 ```
