@@ -6,6 +6,8 @@ compiler:
 arch:
  packages:
   - cmake
+  # `clang` owns `clang-tidy`
+  - clang
  script:
   - ".travis/install"
 script:
