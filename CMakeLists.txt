@@ -11,6 +11,20 @@ if(CCACHE_FOUND)
 	set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
 	set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache)
 endif()
+set(CMAKE_C_OUTPUT_EXTENSION_REPLACE ON)
+set(CMAKE_LINK_WHAT_YOU_USE TRUE)
+set(CLANG_TIDY_OPTIONS
+	-checks=-*
+	bugprone-*
+	misc-*
+	-misc-suspicious-string-compare
+	modernize-*
+	performance-*
+	portability-*
+	readability-*
+)
+string(REPLACE ";" "," CLANG_TIDY_OPTIONS_COMMA_SEPARATED "${CLANG_TIDY_OPTIONS}")
+set(CMAKE_C_CLANG_TIDY "clang-tidy;${CLANG_TIDY_OPTIONS_COMMA_SEPARATED}")
 set(COMMON_FLAGS
 	-Wall
 	-Wextra
@@ -20,6 +34,7 @@ set(DEBUG_FLAGS
 	-DDEBUG
 	-Wrestrict
 	-fsanitize=address,undefined
+	--coverage
 )
 set(RELEASE_FLAGS
 	-s
@@ -36,7 +51,6 @@ set(RELEASE_FLAGS
 	-ffast-math
 )
 if (CMAKE_C_COMPILER_ID MATCHES "GNU")
-	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fdelete-null-pointer-checks")
 endif()
 if (CMAKE_C_COMPILER_ID MATCHES "Clang")
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-newline-eof")
@@ -60,7 +74,6 @@ if(CMAKE_BUILD_TYPE MATCHES Release)
 		endif()
 	endforeach()
 endif()
-message(${CMAKE_C_FLAGS})
 include_directories(include src)
 enable_testing()
 add_subdirectory(src)
