@@ -9,5 +9,5 @@ typedef struct {
 } Allocation;
 void initAllocation(Allocation *allocation);
 void resize(Allocation * const allocation, size_t newSize);
-void reserve(Allocation * const allocation, size_t minLimit);
+void reserve(Allocation * const allocation, size_t bytes);
 void freeAllocation(Allocation *allocation);

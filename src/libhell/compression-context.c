@@ -23,9 +23,9 @@ void initCompressionContext(CompressionContext *restrict context) {
 		.stashOffset = 0
 	};
 }
-void stash(CompressionContext *restrict context, size_t stashOffset) {
+void stash(CompressionContext *restrict context, size_t position) {
 	if (!context->internals->stashSize) {
-		context->internals->stashOffset = stashOffset;
+		context->internals->stashOffset = position;
 	}
 	++context->internals->stashSize;
 }

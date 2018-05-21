@@ -24,10 +24,8 @@ bool writeFile(const char *filename, const u8 *buffer, size_t bufferLength) {
 	if (!file) {
 		return true;
 	}
-	else {
-		fwrite(buffer, sizeof(u8), bufferLength, file);
-		return false;
-	}
+	fwrite(buffer, sizeof(u8), bufferLength, file);
+	return false;
 }
 noreturn void fail(const char *restrict format, ...) {
 	va_list args;

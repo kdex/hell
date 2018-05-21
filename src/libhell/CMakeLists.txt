@@ -43,16 +43,3 @@ install(
 	ARCHIVE DESTINATION lib
 	PUBLIC_HEADER DESTINATION include/${PROJECT_NAME}
 )
-# include(CMakePackageConfigHelpers)
-# write_basic_package_version_file("${CMAKE_CURRENT_BINARY_DIR}/HellConfigVersion.cmake"
-# 	COMPATIBILITY SameMajorVersion
-# )
-# install(
-# 	FILES "HellConfig.cmake" "${CMAKE_CURRENT_BINARY_DIR}/HellConfigVersion.cmake"
-# 	DESTINATION lib/cmake/${PROJECT_NAME}
-# )
-# install(EXPORT HellTargets
-# 	FILE HellTargets.cmake
-# 	NAMESPACE ${PROJECT_NAME}::
-# 	DESTINATION lib/cmake/${PROJECT_NAME}
-# )
