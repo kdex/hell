@@ -1,6 +1,6 @@
 #pragma once
 #include "compression-mode.h"
-#include "types.h"
+#include "common/types.h"
 #include <stdlib.h>
 typedef struct HeaderInternals HeaderInternals;
 typedef struct {

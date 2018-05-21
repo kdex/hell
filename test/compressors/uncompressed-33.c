@@ -1,6 +1,6 @@
-#include "constants.h"
-#include "test-tools.h"
-#include "types.h"
+#include "common/constants.h"
+#include "common/types.h"
+#include "test/tools.h"
 int main(void) {
 	const u8 uncompressed[] = {
 		1, 2, 3, 4, 5, 6, 7, 8, 9, 10,

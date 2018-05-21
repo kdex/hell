@@ -1,5 +1,5 @@
-#include "test-tools.h"
-#include "types.h"
+#include "common/types.h"
+#include "test/tools.h"
 int main(void) {
 	for (u16 seed = 0; seed <= UINT8_MAX; ++seed) {
 		const u8 uncompressed[] = { seed };

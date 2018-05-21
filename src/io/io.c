@@ -1,5 +1,5 @@
 #include "io.h"
-#include "types.h"
+#include "common/types.h"
 #include <stdarg.h>
 #include <stdbool.h>
 #include <stdio.h>

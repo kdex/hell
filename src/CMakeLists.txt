@@ -1,0 +1,5 @@
+add_subdirectory(common)
+add_subdirectory(hell)
+add_subdirectory(io)
+add_subdirectory(libhell)
+add_subdirectory(test)

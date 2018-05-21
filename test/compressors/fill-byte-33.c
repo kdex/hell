@@ -1,5 +1,5 @@
-#include "test-tools.h"
-#include "types.h"
+#include "common/types.h"
+#include "test/tools.h"
 int main(void) {
 	const u16 size = 33;
 	const u8 byte = 42;

@@ -1,0 +1,3 @@
+add_subdirectory(compression)
+add_subdirectory(compressors)
+add_subdirectory(decompression)

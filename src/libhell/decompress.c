@@ -1,9 +1,9 @@
 #include "decompress.h"
 #include "allocation.h"
-#include "constants.h"
 #include "compression-mode.h"
-#include "lut.h"
-#include "types.h"
+#include "common/constants.h"
+#include "common/types.h"
+#include "make-lut/lut.h"
 #include <assert.h>
 #include <stdio.h>
 #include <stdint.h>

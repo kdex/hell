@@ -1,11 +1,11 @@
 #include "compress.h"
-#include "constants.h"
 #include "compression-context.h"
 #include "compression-mode.h"
 #include "compressors.h"
-#include "lut.h"
-#include "types.h"
 #include "util.h"
+#include "common/constants.h"
+#include "common/types.h"
+#include "make-lut/lut.h"
 #include <assert.h>
 #include <stdbool.h>
 #include <stdlib.h>
@@ -67,13 +67,13 @@ size_t compress(const u8 *restrict uncompressed, size_t uncompressedSize, u8 **r
 			}
 		}
 		size_t bestOffset = 0;
+		const size_t forwardSearchSpace = min(uncompressedSize - position, context->large->capacity);
 		for (size_t i = 0; i < position; ++i) {
 			const bool isExactMatch = uncompressed[i] == uncompressed[position];
 			const bool isBitReversedMatch = reverses[uncompressed[i]] == uncompressed[position];
-			const size_t searchSpace = min(uncompressedSize - position, context->large->capacity);
 			if (isExactMatch) {
 				u16 matches = 1;
-				for (size_t j = 1; j < searchSpace; ++j) {
+				for (size_t j = 1; j < forwardSearchSpace; ++j) {
 					if (uncompressed[i + j % (position - i)] != uncompressed[position + j]) {
 						break;
 					}
@@ -87,7 +87,7 @@ size_t compress(const u8 *restrict uncompressed, size_t uncompressedSize, u8 **r
 			}
 			if (isBitReversedMatch) {
 				u16 matches = 1;
-				for (size_t j = 1; j < searchSpace; ++j) {
+				for (size_t j = 1; j < forwardSearchSpace; ++j) {
 					if (reverses[uncompressed[i + j % (position - i)]] != uncompressed[position + j]) {
 						break;
 					}

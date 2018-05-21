@@ -9,7 +9,8 @@ tests = [
 	'mixed',
 	'overscan',
 	'reversed-bits',
-	'reversed-bits-overlap'
+	'reversed-bits-overlap',
+	'reversed-bytes'
 ]
 foreach test : tests
 	testFile = test + '.c'

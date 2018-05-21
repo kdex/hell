@@ -1,6 +1,6 @@
 #include "header.h"
-#include "constants.h"
-#include "types.h"
+#include "common/constants.h"
+#include "common/types.h"
 #include <stdlib.h>
 struct HeaderInternals {
 	u8 mask;

@@ -1,8 +1,8 @@
-#include "constants.h"
-#include "compress.h"
-#include "decompress.h"
-#include "io.h"
-#include "types.h"
+#include "common/constants.h"
+#include "common/types.h"
+#include "libhell/compress.h"
+#include "libhell/decompress.h"
+#include "io/io.h"
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>

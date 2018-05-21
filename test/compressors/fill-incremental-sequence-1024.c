@@ -1,5 +1,5 @@
-#include "test-tools.h"
-#include "types.h"
+#include "common/types.h"
+#include "test/tools.h"
 int main(void) {
 	const u16 size = 1024;
 	for (u16 seed = 0; seed <= UINT8_MAX; ++seed) {

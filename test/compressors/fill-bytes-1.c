@@ -1,5 +1,5 @@
-#include "test-tools.h"
-#include "types.h"
+#include "common/types.h"
+#include "test/tools.h"
 int main(void) {
 	const u16 pairs = 1;
 	const u16 size = 2 * pairs;

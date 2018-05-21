@@ -1,9 +1,9 @@
 #include "compression-context.h"
 #include "allocation.h"
-#include "constants.h"
 #include "compressors.h"
 #include "header.h"
-#include "types.h"
+#include "common/constants.h"
+#include "common/types.h"
 struct AllocationInternals {
 	u16 stashSize;
 	u16 stashOffset;
