@@ -4,7 +4,9 @@ BUILD_DIRECTORY="build"
 mkdir "$BUILD_DIRECTORY"
 cd "$BUILD_DIRECTORY"
 cmake -DCMAKE_BUILD_TYPE=Debug ..
+make -j
 make -j test
 # If everything went well, we will test the project without any instrumentation and full optimization
 rm -rf * && cmake -DCMAKE_BUILD_TYPE=Release ..
+make -j
 make -j test
