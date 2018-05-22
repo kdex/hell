@@ -88,8 +88,8 @@ size_t compress(const u8 *restrict uncompressed, size_t uncompressedSize, u8 **r
 				}
 				{
 					u16 matches = 1;
-					const size_t backwardSearchSpace = min(i, forwardSearchSpace);
-					for (size_t j = 1; j <= backwardSearchSpace; ++j) {
+					const size_t backwardSearchSpace = min(i + 1, forwardSearchSpace);
+					for (size_t j = 1; j < backwardSearchSpace; ++j) {
 						if (uncompressed[i - j] != uncompressed[position + j]) {
 							break;
 						}
