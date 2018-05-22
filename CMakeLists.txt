@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 3.9.4)
 project(hell VERSION 0.0.1)
 set(CMAKE_C_STANDARD 11)
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
 if(NOT CMAKE_BUILD_TYPE)
 	message(STATUS "No build type specified; falling back to `Release`")
 	set(CMAKE_BUILD_TYPE Release)
@@ -16,6 +15,7 @@ set(CMAKE_LINK_WHAT_YOU_USE TRUE)
 set(CLANG_TIDY_OPTIONS
 	-checks=-*
 	bugprone-*
+	llvm-include-order
 	misc-*
 	-misc-suspicious-string-compare
 	modernize-*
@@ -74,8 +74,8 @@ if(CMAKE_BUILD_TYPE MATCHES Release)
 		endif()
 	endforeach()
 endif()
-include_directories(include src)
 enable_testing()
+include_directories(src)
 add_subdirectory(src)
 add_subdirectory(test)
 include(CMakePackageConfigHelpers)

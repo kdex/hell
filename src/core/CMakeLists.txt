@@ -28,7 +28,6 @@ set_target_properties(libhell-shared PROPERTIES
 )
 set_target_properties(libhell-static PROPERTIES
 	OUTPUT_NAME ${PROJECT_NAME}
-
 )
 add_subdirectory(make-lut)
 set(PUBLIC_HEADERS

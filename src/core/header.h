@@ -1,5 +1,5 @@
 #pragma once
-#include "compression-mode.h"
+#include "core/compression-mode.h"
 #include "common/types.h"
 #include <stdlib.h>
 typedef struct HeaderInternals HeaderInternals;

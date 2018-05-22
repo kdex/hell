@@ -1,13 +1,13 @@
-#include "decompress.h"
-#include "allocation.h"
-#include "compression-mode.h"
+#include "core/decompress.h"
 #include "common/constants.h"
 #include "common/types.h"
-#include "make-lut/lut.h"
+#include "core/allocation.h"
+#include "core/compression-mode.h"
+#include "core/make-lut/lut.h"
 #include <assert.h>
-#include <stdio.h>
-#include <stdint.h>
 #include <stdbool.h>
+#include <stdint.h>
+#include <stdio.h>
 #include <string.h>
 size_t decompress(const u8 *restrict compressed, size_t compressedSize, u8 **restrict decompressed) {
 	Allocation *restrict allocation = malloc(sizeof *allocation);

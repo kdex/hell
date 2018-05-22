@@ -1,11 +1,11 @@
-#include "compress.h"
-#include "compression-context.h"
-#include "compression-mode.h"
-#include "compressors.h"
-#include "util.h"
+#include "core/compress.h"
 #include "common/constants.h"
 #include "common/types.h"
-#include "make-lut/lut.h"
+#include "core/compression-context.h"
+#include "core/compression-mode.h"
+#include "core/compressors.h"
+#include "core/make-lut/lut.h"
+#include "core/util.h"
 #include <assert.h>
 #include <stdbool.h>
 #include <stdlib.h>

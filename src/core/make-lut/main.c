@@ -1,16 +1,16 @@
 #include "common/constants.h"
 #include "common/types.h"
 #include "io/io.h"
-#include <stdio.h>
 #include <stdint.h>
+#include <stdio.h>
 int main(int argc, char *argv[]) {
 	const char *invocation = argv[0];
 	if (argc == 2) {
 		const char *path = argv[1];
 		FILE *fp = fopen(path, "w");
 		if (fp) {
-			fprintf(fp, "#include \"make-lut/lut.h\"\n");
 			fprintf(fp, "#include \"common/types.h\"\n");
+			fprintf(fp, "#include \"core/make-lut/lut.h\"\n");
 			fprintf(fp, "const u8 reverses[] = { ");
 			/* This is an internal optimization for the decompression method. Every element in this array is the binary reverse of its index. Don't confuse "reverse" with "negation". */
 			for (u16 n = 0; n <= UINT8_MAX; ++n) {

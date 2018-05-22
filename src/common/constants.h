@@ -1,5 +1,5 @@
 #pragma once
-#include "types.h"
+#include "common/types.h"
 const u8 END;
 /* We're not using CHAR_BIT here, since HAL's format requires a byte size of exactly 8 */
 const u8 BITS_IN_BYTE;

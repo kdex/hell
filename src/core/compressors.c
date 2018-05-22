@@ -1,8 +1,8 @@
-#include "compressors.h"
-#include "compression-mode.h"
-#include "compression-context.h"
-#include "header.h"
+#include "core/compressors.h"
 #include "common/types.h"
+#include "core/compression-context.h"
+#include "core/compression-mode.h"
+#include "core/header.h"
 #include <stdlib.h>
 void chooseHeader(const CompressionContext *restrict context, u16 size, Header **restrict header) {
 	if (size <= context->small->capacity) {

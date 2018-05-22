@@ -1,6 +1,6 @@
 #pragma once
-#include "compression-context.h"
-#include "compression-mode.h"
+#include "core/compression-context.h"
+#include "core/compression-mode.h"
 #include <stdlib.h>
 u16 compressUncompressed(CompressionContext *restrict context, u16 size, const u8 *restrict payload);
 u16 compressFillByte(CompressionContext *restrict context, u16 size, u8 byte);

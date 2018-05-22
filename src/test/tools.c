@@ -1,9 +1,9 @@
-#include "tools.h"
+#include "test/tools.h"
 #include "common/types.h"
+#include "core/compress.h"
+#include "core/compression-mode.h"
+#include "core/decompress.h"
 #include "io/io.h"
-#include "libhell/compress.h"
-#include "libhell/compression-mode.h"
-#include "libhell/decompress.h"
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>

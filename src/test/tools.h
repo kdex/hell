@@ -1,9 +1,9 @@
 #pragma once
 #include "common/types.h"
-#include "libhell/compress.h"
-#include "libhell/compression-mode.h"
-#include "libhell/compressors.h"
-#include "libhell/decompress.h"
+#include "core/compress.h"
+#include "core/compression-mode.h"
+#include "core/compressors.h"
+#include "core/decompress.h"
 #include <stdlib.h>
 void test(
 	size_t (*fn)(

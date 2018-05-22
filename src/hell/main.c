@@ -1,7 +1,7 @@
 #include "common/constants.h"
 #include "common/types.h"
-#include "libhell/compress.h"
-#include "libhell/decompress.h"
+#include "core/compress.h"
+#include "core/decompress.h"
 #include "io/io.h"
 #include <stdbool.h>
 #include <stdio.h>
