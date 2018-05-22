@@ -10,6 +10,10 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
+const u16 minByteMatches = 3;
+const u16 minBytesMatches = 6;
+const u16 minIncrementalSequenceMatches = 3;
+const u16 minCopyMatches = 4;
 size_t compress(const u8 *restrict uncompressed, size_t uncompressedSize, u8 **restrict compressed) {
 	if (uncompressedSize > MAX_PAYLOAD) {
 		*compressed = NULL;
@@ -18,9 +22,6 @@ size_t compress(const u8 *restrict uncompressed, size_t uncompressedSize, u8 **r
 	CompressionContext *context = malloc(sizeof *context);
 	initCompressionContext(context);
 	size_t position = 0;
-	const u16 minByteMatches = 3;
-	const u16 minBytesMatches = 6;
-	const u16 minIncrementalSequenceMatches = 3;
 	while (position < uncompressedSize) {
 		const u8 byteA = uncompressed[position];
 		const size_t forwardSearchSpace = min(uncompressedSize - position, context->large->capacity);
@@ -84,7 +85,7 @@ size_t compress(const u8 *restrict uncompressed, size_t uncompressedSize, u8 **r
 						}
 						++matches;
 					}
-					if (matched < matches) {
+					if (matches >= minCopyMatches && matched < matches) {
 						bestOffset = i;
 						matched = matches;
 						leader = COPY_BYTES;
@@ -99,7 +100,7 @@ size_t compress(const u8 *restrict uncompressed, size_t uncompressedSize, u8 **r
 						}
 						++matches;
 					}
-					if (matched < matches) {
+					if (matches >= minCopyMatches && matched < matches) {
 						bestOffset = i;
 						matched = matches;
 						leader = COPY_REVERSED_BYTES;
@@ -114,7 +115,7 @@ size_t compress(const u8 *restrict uncompressed, size_t uncompressedSize, u8 **r
 					}
 					++matches;
 				}
-				if (matched < matches) {
+				if (matches >= minCopyMatches && matched < matches) {
 					bestOffset = i;
 					matched = matches;
 					leader = COPY_REVERSED_BITS;
