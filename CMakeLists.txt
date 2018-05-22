@@ -32,7 +32,6 @@ set(COMMON_FLAGS
 )
 set(DEBUG_FLAGS
 	-DDEBUG
-	-Wrestrict
 	-fsanitize=address,undefined
 	--coverage
 )

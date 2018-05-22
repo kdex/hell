@@ -1,10 +1,10 @@
 #include "common/types.h"
 #include "test/tools.h"
+#define SIZE 1024
 int main(void) {
-	const u16 size = 1024;
 	for (u16 seed = 0; seed <= UINT8_MAX; ++seed) {
-		u8 uncompressed[size];
-		for (u16 i = 0; i < size; ++i) {
+		u8 uncompressed[SIZE];
+		for (u16 i = 0; i < SIZE; ++i) {
 			uncompressed[i] = seed + i;
 		}
 		const u8 compressed[] = {

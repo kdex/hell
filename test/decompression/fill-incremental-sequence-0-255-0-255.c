@@ -1,10 +1,10 @@
 #include "common/constants.h"
 #include "common/types.h"
 #include "test/tools.h"
+#define ELEMENTS (2 * (UINT8_MAX + 1))
 int main(void) {
-	const u16 elements = 2 * (UINT8_MAX + 1);
-	u8 decompressed[elements];
-	for (u16 i = 0; i < elements; ++i) {
+	u8 decompressed[ELEMENTS];
+	for (u16 i = 0; i < ELEMENTS; ++i) {
 		decompressed[i] = i;
 	}
 	const u8 compressed[] = {
