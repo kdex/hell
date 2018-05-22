@@ -18,23 +18,28 @@ size_t compress(const u8 *restrict uncompressed, size_t uncompressedSize, u8 **r
 	CompressionContext *context = malloc(sizeof *context);
 	initCompressionContext(context);
 	size_t position = 0;
+	const u16 minByteMatches = 3;
+	const u16 minBytesMatches = 6;
+	const u16 minIncrementalSequenceMatches = 3;
 	while (position < uncompressedSize) {
 		const u8 byteA = uncompressed[position];
+		const size_t forwardSearchSpace = min(uncompressedSize - position, context->large->capacity);
 		u8 byteB = 0;
 		u16 matched = 1;
 		CompressionMode leader = UNCOMPRESSED;
 		{
-			if (position + 3 < uncompressedSize) {
+			if (forwardSearchSpace >= minBytesMatches) {
 				u16 pairs = 1;
 				byteB = uncompressed[position + 1];
-				for (size_t i = position + 2; i < uncompressedSize - 1; i += 2) {
+				const size_t end = min(position + context->large->capacity, uncompressedSize) - 1;
+				for (size_t i = position + 2; i < end; i += 2) {
 					if (uncompressed[i] != byteA || uncompressed[i + 1] != byteB) {
 						break;
 					}
 					++pairs;
 				}
 				const u16 matches = 2 * pairs;
-				if (matches > 2 && matched < matches) {
+				if (matches >= minBytesMatches && matched < matches) {
 					matched = matches;
 					leader = FILL_BYTES;
 				}
@@ -42,32 +47,31 @@ size_t compress(const u8 *restrict uncompressed, size_t uncompressedSize, u8 **r
 		}
 		{
 			u16 matches = 0;
-			for (size_t i = position; i < uncompressedSize; ++i) {
+			for (size_t i = position; i < forwardSearchSpace; ++i) {
 				if (uncompressed[i] != byteA) {
 					break;
 				}
 				++matches;
 			}
-			if (matches > 2 && matched < matches) {
+			if (matches >= minByteMatches && matched < matches) {
 				matched = matches;
 				leader = FILL_BYTE;
 			}
 		}
 		{
 			u16 matches = 0;
-			for (size_t i = 0; i < uncompressedSize - position; ++i) {
+			for (size_t i = 0; i < forwardSearchSpace; ++i) {
 				if (uncompressed[position + i] != (u8) (byteA + i)) {
 					break;
 				}
 				++matches;
 			}
-			if (matches > 2 && matched < matches) {
+			if (matches >= minIncrementalSequenceMatches && matched < matches) {
 				matched = matches;
 				leader = FILL_INCREMENTAL_SEQUENCE;
 			}
 		}
 		size_t bestOffset = 0;
-		const size_t forwardSearchSpace = min(uncompressedSize - position, context->large->capacity);
 		for (size_t i = 0; i < position; ++i) {
 			const bool isExactMatch = uncompressed[i] == uncompressed[position];
 			const bool isBitReversedMatch = reverses[uncompressed[i]] == uncompressed[position];
