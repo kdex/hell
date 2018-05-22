@@ -77,13 +77,13 @@ $ cmake .. && make -j
 ```
 This will build the following assets for you:
 - `hell` binary
-- a static (.a) and shared (.so) library
-- headers to include into your projects
+- `libhell` (as a static and a shared library)
+- headers for your projects
 
 ### Installation
 Installing `hell` will make the aforementioned assets globally available. In the build directory, run:
 ```bash
-$ make -j install
+# make -j install
 ```
 If you would like the assets to be installed in a local directory, you should instead invoke `cmake` like so:
 ```bash
