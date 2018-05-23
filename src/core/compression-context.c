@@ -1,5 +1,6 @@
 #include "core/compression-context.h"
 #include "common/constants.h"
+#include "common/restrict.h"
 #include "common/types.h"
 #include "core/allocation.h"
 #include "core/compressors.h"
@@ -8,7 +9,7 @@ struct AllocationInternals {
 	u16 stashSize;
 	u16 stashOffset;
 };
-void initCompressionContext(CompressionContext *restrict context) {
+void initCompressionContext(CompressionContext *RESTRICT context) {
 	*context = (CompressionContext) {
 		.allocation = malloc(sizeof (Allocation)),
 		.small = malloc(sizeof (Header)),
@@ -23,13 +24,13 @@ void initCompressionContext(CompressionContext *restrict context) {
 		.stashOffset = 0
 	};
 }
-void stash(CompressionContext *restrict context, size_t position) {
+void stash(CompressionContext *RESTRICT context, u16 position) {
 	if (!context->internals->stashSize) {
 		context->internals->stashOffset = position;
 	}
 	++context->internals->stashSize;
 }
-void flushStash(CompressionContext *restrict context, const u8 *uncompressed) {
+void flushStash(CompressionContext *RESTRICT context, const u8 *uncompressed) {
 	if (context->internals->stashSize) {
 		compressUncompressed(context, context->internals->stashSize, uncompressed + context->internals->stashOffset);
 		context->internals->stashSize = 0;
@@ -40,7 +41,7 @@ void terminateCompressionContext(CompressionContext *context) {
 	context->allocation->buffer[context->allocation->written] = END;
 	++context->allocation->written;
 }
-void freeCompressionContext(CompressionContext *restrict context) {
+void freeCompressionContext(CompressionContext *RESTRICT context) {
 	freeAllocation(context->allocation);
 	freeHeader(context->small);
 	freeHeader(context->large);

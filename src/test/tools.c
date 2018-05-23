@@ -1,4 +1,5 @@
 #include "test/tools.h"
+#include "common/restrict.h"
 #include "common/types.h"
 #include "core/compress.h"
 #include "core/compression-mode.h"
@@ -7,7 +8,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
-void test(size_t (*fn)(const u8 *restrict payload, size_t payloadSize, u8 **restrict destination), const u8 *restrict payload, size_t payloadSize, const u8 *restrict expected, size_t expectedSize) {
+void test(size_t (*fn)(const u8 *RESTRICT payload, size_t payloadSize, u8 **RESTRICT destination), const u8 *RESTRICT payload, size_t payloadSize, const u8 *RESTRICT expected, size_t expectedSize) {
 	u8 *buffer;
 	const size_t actualSize = fn(payload, payloadSize, &buffer);
 	compare(buffer, actualSize, expected, expectedSize);
@@ -20,11 +21,11 @@ void test(size_t (*fn)(const u8 *restrict payload, size_t payloadSize, u8 **rest
 	free(buffer);
 }
 void validateCompressionResult(
-	CompressionContext *restrict context,
+	CompressionContext *RESTRICT context,
 	size_t compressedSize,
-	const u8 *restrict uncompressed,
+	const u8 *RESTRICT uncompressed,
 	u16 uncompressedSize,
-	const u8 *restrict expected,
+	const u8 *RESTRICT expected,
 	size_t expectedSize
 ) {
 	if (compressedSize) {
@@ -47,75 +48,75 @@ void validateCompressionResult(
 	}
 }
 void testUncompressed(
-	const u8 *restrict uncompressed,
+	const u8 *RESTRICT uncompressed,
 	u16 uncompressedSize,
-	const u8 *restrict expected,
+	const u8 *RESTRICT expected,
 	u16 expectedSize
 ) {
-	CompressionContext *restrict context = malloc(sizeof *context);
+	CompressionContext *RESTRICT context = malloc(sizeof *context);
 	initCompressionContext(context);
 	const size_t compressedSize = compressUncompressed(context, uncompressedSize, uncompressed);
 	validateCompressionResult(context, compressedSize, uncompressed, uncompressedSize, expected, expectedSize);
 	freeCompressionContext(context);
 }
 void testFillByte(
-	const u8 *restrict uncompressed,
+	const u8 *RESTRICT uncompressed,
 	u16 uncompressedSize,
-	const u8 *restrict expected,
+	const u8 *RESTRICT expected,
 	u16 expectedSize,
 	u8 byte
 ) {
-	CompressionContext *restrict context = malloc(sizeof *context);
+	CompressionContext *RESTRICT context = malloc(sizeof *context);
 	initCompressionContext(context);
 	const size_t compressedSize = compressFillByte(context, uncompressedSize, byte);
 	validateCompressionResult(context, compressedSize, uncompressed, uncompressedSize, expected, expectedSize);
 	freeCompressionContext(context);
 }
 void testFillBytes(
-	const u8 *restrict uncompressed,
+	const u8 *RESTRICT uncompressed,
 	u16 uncompressedSize,
-	const u8 *restrict expected,
+	const u8 *RESTRICT expected,
 	u16 expectedSize,
 	u8 byteA,
 	u8 byteB
 ) {
-	CompressionContext *restrict context = malloc(sizeof *context);
+	CompressionContext *RESTRICT context = malloc(sizeof *context);
 	initCompressionContext(context);
 	const size_t compressedSize = compressFillBytes(context, uncompressedSize / 2, byteA, byteB);
 	validateCompressionResult(context, compressedSize, uncompressed, uncompressedSize, expected, expectedSize);
 	freeCompressionContext(context);
 }
 void testFillIncrementalSequence(
-	const u8 *restrict uncompressed,
+	const u8 *RESTRICT uncompressed,
 	u16 uncompressedSize,
-	const u8 *restrict expected,
+	const u8 *RESTRICT expected,
 	u16 expectedSize,
 	u8 seed
 ) {
-	CompressionContext *restrict context = malloc(sizeof *context);
+	CompressionContext *RESTRICT context = malloc(sizeof *context);
 	initCompressionContext(context);
 	const size_t compressedSize = compressFillIncrementalSequence(context, uncompressedSize, seed);
 	validateCompressionResult(context, compressedSize, uncompressed, uncompressedSize, expected, expectedSize);
 	freeCompressionContext(context);
 }
 void testCopy(
-	const u8 *restrict uncompressed,
+	const u8 *RESTRICT uncompressed,
 	u16 uncompressedSize,
-	const u8 *restrict expected,
+	const u8 *RESTRICT expected,
 	u16 expectedSize,
 	CompressionMode mode,
 	u16 copyOffset
 ) {
-	CompressionContext *restrict context = malloc(sizeof *context);
+	CompressionContext *RESTRICT context = malloc(sizeof *context);
 	initCompressionContext(context);
 	const size_t compressedSize = compressCopy(context, uncompressedSize, mode, copyOffset);
 	validateCompressionResult(context, compressedSize, uncompressed, uncompressedSize, expected, expectedSize);
 	freeCompressionContext(context);
 }
 void compare(
-	const u8 *restrict actual,
+	const u8 *RESTRICT actual,
 	size_t actualSize,
-	const u8 *restrict expected,
+	const u8 *RESTRICT expected,
 	size_t expectedSize
 ) {
 	if (actualSize != expectedSize) {

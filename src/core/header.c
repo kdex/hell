@@ -1,5 +1,6 @@
 #include "core/header.h"
 #include "common/constants.h"
+#include "common/restrict.h"
 #include "common/types.h"
 #include <stdlib.h>
 struct HeaderInternals {
@@ -7,7 +8,7 @@ struct HeaderInternals {
 	u8 indexShift;
 	u8 modeShift;
 };
-void initHeader(Header *restrict header, u8 headerBits, u8 indexBits) {
+void initHeader(Header *RESTRICT header, u8 headerBits, u8 indexBits) {
 	const u8 freeBits = headerBits - indexBits - MODE_BITS;
 	*header = (Header) {
 		.size = headerBits / BITS_IN_BYTE,
@@ -20,11 +21,11 @@ void initHeader(Header *restrict header, u8 headerBits, u8 indexBits) {
 		.modeShift = indexBits % BITS_IN_BYTE,
 	};
 }
-u8 makeFirstByte(const Header *restrict header, CompressionMode mode, u16 size) {
+u8 makeFirstByte(const Header *RESTRICT header, CompressionMode mode, u16 size) {
 	const u16 maxIndex = size - 1;
 	return header->internals->mask | mode << header->internals->modeShift | maxIndex >> header->internals->indexShift;
 }
-void initSmallHeader(Header *restrict header) {
+void initSmallHeader(Header *RESTRICT header) {
 	/*
 	* Small header in memory: MMMIIIII
 	*   MMM = Compression mode
@@ -32,7 +33,7 @@ void initSmallHeader(Header *restrict header) {
 	*/
 	initHeader(header, BITS_IN_BYTE, 5);
 }
-void initLargeHeader(Header *restrict header) {
+void initLargeHeader(Header *RESTRICT header) {
 	/*
 	* Large header in memory: 111MMMJJ IIIIIIII
 	*   MMM = Compression mode
@@ -41,7 +42,7 @@ void initLargeHeader(Header *restrict header) {
 	*/
 	initHeader(header, 2 * BITS_IN_BYTE, 10);
 }
-void freeHeader(Header *restrict header) {
+void freeHeader(Header *RESTRICT header) {
 	free(header->internals);
 	free(header);
 }

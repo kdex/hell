@@ -29,6 +29,7 @@ set(COMMON_FLAGS
 	-Wall
 	-Wextra
 	-pedantic
+	-Wconversion
 )
 set(DEBUG_FLAGS
 	-DDEBUG
@@ -65,7 +66,7 @@ endif()
 function(add_flag FLAG)
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${FLAG}" PARENT_SCOPE)
 endfunction()
-if (${CLANG})
+if(${CLANG})
 	add_flag(-Wno-newline-eof)
 endif()
 foreach(FLAG ${COMMON_FLAGS})

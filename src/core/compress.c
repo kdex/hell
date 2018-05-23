@@ -14,7 +14,7 @@ const u16 minByteMatches = 3;
 const u16 minBytesMatches = 6;
 const u16 minIncrementalSequenceMatches = 3;
 const u16 minCopyMatches = 4;
-size_t compress(const u8 *restrict uncompressed, size_t uncompressedSize, u8 **restrict compressed) {
+size_t compress(const u8 *uncompressed, size_t uncompressedSize, u8 **compressed) {
 	if (uncompressedSize > MAX_PAYLOAD) {
 		*compressed = NULL;
 		return 0;
@@ -24,7 +24,7 @@ size_t compress(const u8 *restrict uncompressed, size_t uncompressedSize, u8 **r
 	size_t position = 0;
 	while (position < uncompressedSize) {
 		const u8 byteA = uncompressed[position];
-		const size_t forwardSearchSpace = min(uncompressedSize - position, context->large->capacity);
+		const u16 forwardSearchSpace = min(uncompressedSize - position, context->large->capacity);
 		u8 byteB = 0;
 		u16 matched = 1;
 		CompressionMode leader = UNCOMPRESSED;
@@ -48,7 +48,7 @@ size_t compress(const u8 *restrict uncompressed, size_t uncompressedSize, u8 **r
 		}
 		{
 			u16 matches = 0;
-			for (size_t i = position; i < forwardSearchSpace; ++i) {
+			for (u16 i = position; i < forwardSearchSpace; ++i) {
 				if (uncompressed[i] != byteA) {
 					break;
 				}
@@ -61,7 +61,7 @@ size_t compress(const u8 *restrict uncompressed, size_t uncompressedSize, u8 **r
 		}
 		{
 			u16 matches = 0;
-			for (size_t i = 0; i < forwardSearchSpace; ++i) {
+			for (u16 i = 0; i < forwardSearchSpace; ++i) {
 				if (uncompressed[position + i] != (u8) (byteA + i)) {
 					break;
 				}
@@ -72,14 +72,14 @@ size_t compress(const u8 *restrict uncompressed, size_t uncompressedSize, u8 **r
 				leader = FILL_INCREMENTAL_SEQUENCE;
 			}
 		}
-		size_t bestOffset = 0;
+		u16 bestOffset = 0;
 		for (size_t i = 0; i < position; ++i) {
 			const bool isExactMatch = uncompressed[i] == uncompressed[position];
 			const bool isBitReversedMatch = reverses[uncompressed[i]] == uncompressed[position];
 			if (isExactMatch) {
 				{
 					u16 matches = 1;
-					for (size_t j = 1; j < forwardSearchSpace; ++j) {
+					for (u16 j = 1; j < forwardSearchSpace; ++j) {
 						if (uncompressed[i + j % (position - i)] != uncompressed[position + j]) {
 							break;
 						}
@@ -93,8 +93,8 @@ size_t compress(const u8 *restrict uncompressed, size_t uncompressedSize, u8 **r
 				}
 				{
 					u16 matches = 1;
-					const size_t backwardSearchSpace = min(i + 1, forwardSearchSpace);
-					for (size_t j = 1; j < backwardSearchSpace; ++j) {
+					const u16 backwardSearchSpace = min(i + 1, forwardSearchSpace);
+					for (u16 j = 1; j < backwardSearchSpace; ++j) {
 						if (uncompressed[i - j] != uncompressed[position + j]) {
 							break;
 						}
@@ -109,7 +109,7 @@ size_t compress(const u8 *restrict uncompressed, size_t uncompressedSize, u8 **r
 			}
 			if (isBitReversedMatch) {
 				u16 matches = 1;
-				for (size_t j = 1; j < forwardSearchSpace; ++j) {
+				for (u16 j = 1; j < forwardSearchSpace; ++j) {
 					if (reverses[uncompressed[i + j % (position - i)]] != uncompressed[position + j]) {
 						break;
 					}

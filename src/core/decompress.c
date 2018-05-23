@@ -9,8 +9,8 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
-size_t decompress(const u8 *restrict compressed, size_t compressedSize, u8 **restrict decompressed) {
-	Allocation *restrict allocation = malloc(sizeof *allocation);
+size_t decompress(const u8 *compressed, size_t compressedSize, u8 **decompressed) {
+	Allocation *allocation = malloc(sizeof *allocation);
 	initAllocation(allocation);
 	/* TODO: Figure out the maximum sizes */
 	size_t read = 0;
@@ -56,7 +56,7 @@ size_t decompress(const u8 *restrict compressed, size_t compressedSize, u8 **res
 			case FILL_BYTES: {
 				const u8 left = compressed[read++];
 				const u8 right = compressed[read++];
-				for (size_t i = 0; i < storedLength; ++i) {
+				for (u16 i = 0; i < storedLength; ++i) {
 					allocation->buffer[(*written)++] = left;
 					allocation->buffer[(*written)++] = right;
 				}
@@ -64,25 +64,25 @@ size_t decompress(const u8 *restrict compressed, size_t compressedSize, u8 **res
 			}
 			case FILL_INCREMENTAL_SEQUENCE: {
 				const u8 seed = compressed[read++];
-				for (size_t i = 0; i < storedLength; ++i) {
-					allocation->buffer[(*written)++] = seed + i;
+				for (u16 i = 0; i < storedLength; ++i) {
+					allocation->buffer[(*written)++] = (u8) (seed + i);
 				}
 				break;
 			}
 			case COPY_BYTES: {
-				for (size_t i = 0; i < storedLength; ++i) {
+				for (u16 i = 0; i < storedLength; ++i) {
 					allocation->buffer[(*written)++] = allocation->buffer[copyOffset + i];
 				}
 				break;
 			}
 			case COPY_REVERSED_BITS: {
-				for (size_t i = 0; i < storedLength; ++i) {
+				for (u16 i = 0; i < storedLength; ++i) {
 					allocation->buffer[(*written)++] = reverses[allocation->buffer[copyOffset + i]];
 				}
 				break;
 			}
 			case COPY_REVERSED_BYTES: {
-				for (size_t i = 0; i < storedLength; ++i) {
+				for (u16 i = 0; i < storedLength; ++i) {
 					allocation->buffer[(*written)++] = allocation->buffer[copyOffset - i];
 				}
 				break;
