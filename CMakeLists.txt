@@ -29,7 +29,7 @@ set(COMMON_FLAGS
 	-Wall
 	-Wextra
 	-pedantic
-	-Wconversion
+	-Wsign-conversion
 )
 set(DEBUG_FLAGS
 	-DDEBUG
@@ -68,6 +68,9 @@ function(add_flag FLAG)
 endfunction()
 if(${CLANG})
 	add_flag(-Wno-newline-eof)
+endif()
+if(${MSVC})
+	add_flag(-DNOMINMAX)
 endif()
 foreach(FLAG ${COMMON_FLAGS})
 	if (${GCC} OR ${CLANG})

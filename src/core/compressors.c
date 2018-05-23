@@ -14,8 +14,8 @@ void chooseHeader(const CompressionContext *RESTRICT context, u16 size, Header *
 	}
 }
 u16 compressUncompressed(CompressionContext *RESTRICT context, u16 size, const u8 *RESTRICT payload) {
-	size_t *RESTRICT written = &context->allocation->written;
-	const size_t offset = *written;
+	u32 *RESTRICT written = &context->allocation->written;
+	const u32 offset = *written;
 	Header *header;
 	chooseHeader(context, size, &header);
 	/*
@@ -34,8 +34,8 @@ u16 compressUncompressed(CompressionContext *RESTRICT context, u16 size, const u
 	return compressedSize;
 }
 u16 compressFillByte(CompressionContext *RESTRICT context, u16 size, u8 byte) {
-	size_t *RESTRICT written = &context->allocation->written;
-	const size_t offset = *written;
+	u32 *RESTRICT written = &context->allocation->written;
+	const u32 offset = *written;
 	Header *header;
 	chooseHeader(context, size, &header);
 	/*
@@ -52,8 +52,8 @@ u16 compressFillByte(CompressionContext *RESTRICT context, u16 size, u8 byte) {
 	return compressedSize;
 }
 u16 compressFillBytes(CompressionContext *RESTRICT context, u16 size, u8 byteA, u8 byteB) {
-	size_t *RESTRICT written = &context->allocation->written;
-	const size_t offset = *written;
+	u32 *RESTRICT written = &context->allocation->written;
+	const u32 offset = *written;
 	Header *header;
 	chooseHeader(context, size, &header);
 	/*
@@ -71,8 +71,8 @@ u16 compressFillBytes(CompressionContext *RESTRICT context, u16 size, u8 byteA, 
 	return compressedSize;
 }
 u16 compressFillIncrementalSequence(CompressionContext *RESTRICT context, u16 size, u8 seed) {
-	size_t *RESTRICT written = &context->allocation->written;
-	const size_t offset = *written;
+	u32 *RESTRICT written = &context->allocation->written;
+	const u32 offset = *written;
 	Header *header;
 	chooseHeader(context, size, &header);
 	/*
@@ -89,8 +89,8 @@ u16 compressFillIncrementalSequence(CompressionContext *RESTRICT context, u16 si
 	return compressedSize;
 }
 u16 compressCopy(CompressionContext *RESTRICT context, u16 size, CompressionMode mode, u16 copyOffset) {
-	size_t *RESTRICT written = &context->allocation->written;
-	const size_t offset = *written;
+	u32 *RESTRICT written = &context->allocation->written;
+	const u32 offset = *written;
 	Header *header;
 	chooseHeader(context, size, &header);
 	/*
@@ -103,7 +103,7 @@ u16 compressCopy(CompressionContext *RESTRICT context, u16 size, CompressionMode
 	buffer[offset] = makeFirstByte(header, mode, size);
 	buffer[offset + 1] = size - 1;
 	buffer[offset + header->size] = (copyOffset & 0xff00) >> 8;
-	buffer[offset + header->size + 1] = (u8) copyOffset;
+	buffer[offset + header->size + 1] = copyOffset;
 	*written += compressedSize;
 	return compressedSize;
 }

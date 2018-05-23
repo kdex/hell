@@ -23,7 +23,9 @@ void initHeader(Header *RESTRICT header, u8 headerBits, u8 indexBits) {
 }
 u8 makeFirstByte(const Header *RESTRICT header, CompressionMode mode, u16 size) {
 	const u16 maxIndex = size - 1;
-	return header->internals->mask | mode << header->internals->modeShift | maxIndex >> header->internals->indexShift;
+	return header->internals->mask
+		| (u8) (mode << header->internals->modeShift)
+		| maxIndex >> header->internals->indexShift;
 }
 void initSmallHeader(Header *RESTRICT header) {
 	/*

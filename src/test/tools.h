@@ -7,15 +7,15 @@
 #include "core/decompress.h"
 #include <stdlib.h>
 void test(
-	size_t (*fn)(
+	u32 (*fn)(
 		const u8 *RESTRICT payload,
-		size_t payloadSize,
+		u32 payloadSize,
 		u8 **RESTRICT destination
 	),
 	const u8 *RESTRICT payload,
-	size_t payloadSize,
+	u32 payloadSize,
 	const u8 *RESTRICT expected,
-	size_t expectedSize
+	u32 expectedSize
 );
 void testUncompressed(
 	const u8 *RESTRICT uncompressed,
@@ -53,4 +53,9 @@ void testCopy(
 	CompressionMode mode,
 	u16 copyOffset
 );
-void compare(const u8 *RESTRICT actual, size_t actualSize, const u8 *RESTRICT expected, size_t expectedSize);
+void compare(
+	const u8 *RESTRICT actual,
+	u32 actualSize,
+	const u8 *RESTRICT expected,
+	u32 expectedSize
+);

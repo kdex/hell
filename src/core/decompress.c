@@ -9,12 +9,12 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
-size_t decompress(const u8 *compressed, size_t compressedSize, u8 **decompressed) {
+u32 decompress(const u8 *compressed, u32 compressedSize, u8 **decompressed) {
 	Allocation *allocation = malloc(sizeof *allocation);
 	initAllocation(allocation);
 	/* TODO: Figure out the maximum sizes */
-	size_t read = 0;
-	size_t *written = &allocation->written;
+	u32 read = 0;
+	u32 *written = &allocation->written;
 	while (read < compressedSize) {
 		const u8 header = compressed[read++];
 		if (header == END) {
@@ -65,7 +65,7 @@ size_t decompress(const u8 *compressed, size_t compressedSize, u8 **decompressed
 			case FILL_INCREMENTAL_SEQUENCE: {
 				const u8 seed = compressed[read++];
 				for (u16 i = 0; i < storedLength; ++i) {
-					allocation->buffer[(*written)++] = (u8) (seed + i);
+					allocation->buffer[(*written)++] = seed + i;
 				}
 				break;
 			}
@@ -90,7 +90,7 @@ size_t decompress(const u8 *compressed, size_t compressedSize, u8 **decompressed
 		}
 	}
 	assert(read == compressedSize);
-	const size_t size = *written;
+	const u32 size = *written;
 	resize(allocation, size);
 	if (size && read == compressedSize) {
 		*decompressed = malloc(size);

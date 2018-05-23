@@ -8,13 +8,18 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
-void test(size_t (*fn)(const u8 *RESTRICT payload, size_t payloadSize, u8 **RESTRICT destination), const u8 *RESTRICT payload, size_t payloadSize, const u8 *RESTRICT expected, size_t expectedSize) {
+void test(
+	u32 (*fn)(const u8 *RESTRICT payload, u32 payloadSize, u8 **RESTRICT destination),
+	const u8 *RESTRICT payload, u32 payloadSize,
+	const u8 *RESTRICT expected,
+	u32 expectedSize
+) {
 	u8 *buffer;
-	const size_t actualSize = fn(payload, payloadSize, &buffer);
+	const u32 actualSize = fn(payload, payloadSize, &buffer);
 	compare(buffer, actualSize, expected, expectedSize);
 	if (fn == compress) {
 		u8 *decompressed;
-		const size_t decompressedSize = decompress(buffer, actualSize, &decompressed);
+		const u32 decompressedSize = decompress(buffer, actualSize, &decompressed);
 		compare(decompressed, decompressedSize, payload, payloadSize);
 		free(decompressed);
 	}
@@ -22,11 +27,11 @@ void test(size_t (*fn)(const u8 *RESTRICT payload, size_t payloadSize, u8 **REST
 }
 void validateCompressionResult(
 	CompressionContext *RESTRICT context,
-	size_t compressedSize,
+	u32 compressedSize,
 	const u8 *RESTRICT uncompressed,
 	u16 uncompressedSize,
 	const u8 *RESTRICT expected,
-	size_t expectedSize
+	u32 expectedSize
 ) {
 	if (compressedSize) {
 		/*
@@ -42,7 +47,7 @@ void validateCompressionResult(
 	*/
 	if (uncompressed) {
 		u8 *decompressed;
-		const size_t decompressedSize = decompress(context->allocation->buffer, compressedSize, &decompressed);
+		const u32 decompressedSize = decompress(context->allocation->buffer, compressedSize, &decompressed);
 		compare(decompressed, decompressedSize, uncompressed, uncompressedSize);
 		free(decompressed);
 	}
@@ -55,7 +60,7 @@ void testUncompressed(
 ) {
 	CompressionContext *RESTRICT context = malloc(sizeof *context);
 	initCompressionContext(context);
-	const size_t compressedSize = compressUncompressed(context, uncompressedSize, uncompressed);
+	const u32 compressedSize = compressUncompressed(context, uncompressedSize, uncompressed);
 	validateCompressionResult(context, compressedSize, uncompressed, uncompressedSize, expected, expectedSize);
 	freeCompressionContext(context);
 }
@@ -68,7 +73,7 @@ void testFillByte(
 ) {
 	CompressionContext *RESTRICT context = malloc(sizeof *context);
 	initCompressionContext(context);
-	const size_t compressedSize = compressFillByte(context, uncompressedSize, byte);
+	const u32 compressedSize = compressFillByte(context, uncompressedSize, byte);
 	validateCompressionResult(context, compressedSize, uncompressed, uncompressedSize, expected, expectedSize);
 	freeCompressionContext(context);
 }
@@ -82,7 +87,7 @@ void testFillBytes(
 ) {
 	CompressionContext *RESTRICT context = malloc(sizeof *context);
 	initCompressionContext(context);
-	const size_t compressedSize = compressFillBytes(context, uncompressedSize / 2, byteA, byteB);
+	const u32 compressedSize = compressFillBytes(context, uncompressedSize / 2, byteA, byteB);
 	validateCompressionResult(context, compressedSize, uncompressed, uncompressedSize, expected, expectedSize);
 	freeCompressionContext(context);
 }
@@ -95,7 +100,7 @@ void testFillIncrementalSequence(
 ) {
 	CompressionContext *RESTRICT context = malloc(sizeof *context);
 	initCompressionContext(context);
-	const size_t compressedSize = compressFillIncrementalSequence(context, uncompressedSize, seed);
+	const u32 compressedSize = compressFillIncrementalSequence(context, uncompressedSize, seed);
 	validateCompressionResult(context, compressedSize, uncompressed, uncompressedSize, expected, expectedSize);
 	freeCompressionContext(context);
 }
@@ -109,15 +114,15 @@ void testCopy(
 ) {
 	CompressionContext *RESTRICT context = malloc(sizeof *context);
 	initCompressionContext(context);
-	const size_t compressedSize = compressCopy(context, uncompressedSize, mode, copyOffset);
+	const u32 compressedSize = compressCopy(context, uncompressedSize, mode, copyOffset);
 	validateCompressionResult(context, compressedSize, uncompressed, uncompressedSize, expected, expectedSize);
 	freeCompressionContext(context);
 }
 void compare(
 	const u8 *RESTRICT actual,
-	size_t actualSize,
+	u32 actualSize,
 	const u8 *RESTRICT expected,
-	size_t expectedSize
+	u32 expectedSize
 ) {
 	if (actualSize != expectedSize) {
 		fail("Size mismatch. Expected %i, got %i\n", expectedSize, actualSize);
@@ -136,7 +141,7 @@ void compare(
 		const size_t attentionWidth = strlen(attentionTitle) + padding;
 		/* Append heading to message */
 		const char *headingFormat = "%*s%*s%*s%*s\n";
-		const size_t headingSize = 1 + snprintf(
+		const size_t headingSize = 1 + (size_t) snprintf(
 			NULL,
 			0,
 			headingFormat,
@@ -170,7 +175,7 @@ void compare(
 		/* Append (mis)matches to message */
 		bool mismatch = false;
 		int maxLines = 10;
-		for (size_t i = 0; i < actualSize; ++i) {
+		for (u32 i = 0; i < actualSize; ++i) {
 			const bool hasMismatch = expected[i] != actual[i];
 			if (hasMismatch) {
 				mismatch = true;
@@ -178,7 +183,7 @@ void compare(
 			if (mismatch && maxLines-- > 0) {
 				const char *comparisonFormat = "%*lu%*lu%*lu%*s\n";
 				const char *notice = hasMismatch ? "<--" : "";
-				const size_t comparisonSize = 1 + snprintf(
+				const size_t comparisonSize = 1 + (size_t) snprintf(
 					NULL,
 					0,
 					comparisonFormat,

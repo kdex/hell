@@ -14,14 +14,14 @@ const u16 minByteMatches = 3;
 const u16 minBytesMatches = 6;
 const u16 minIncrementalSequenceMatches = 3;
 const u16 minCopyMatches = 4;
-size_t compress(const u8 *uncompressed, size_t uncompressedSize, u8 **compressed) {
+u32 compress(const u8 *uncompressed, u32 uncompressedSize, u8 **compressed) {
 	if (uncompressedSize > MAX_PAYLOAD) {
 		*compressed = NULL;
 		return 0;
 	}
 	CompressionContext *context = malloc(sizeof *context);
 	initCompressionContext(context);
-	size_t position = 0;
+	u16 position = 0;
 	while (position < uncompressedSize) {
 		const u8 byteA = uncompressed[position];
 		const u16 forwardSearchSpace = min(uncompressedSize - position, context->large->capacity);
@@ -32,8 +32,8 @@ size_t compress(const u8 *uncompressed, size_t uncompressedSize, u8 **compressed
 			if (forwardSearchSpace >= minBytesMatches) {
 				u16 pairs = 1;
 				byteB = uncompressed[position + 1];
-				const size_t end = min(position + context->large->capacity, uncompressedSize) - 1;
-				for (size_t i = position + 2; i < end; i += 2) {
+				const u16 end = min((unsigned) (position + context->large->capacity), uncompressedSize) - 1;
+				for (u16 i = position + 2; i < end; i += 2) {
 					if (uncompressed[i] != byteA || uncompressed[i + 1] != byteB) {
 						break;
 					}
@@ -73,7 +73,7 @@ size_t compress(const u8 *uncompressed, size_t uncompressedSize, u8 **compressed
 			}
 		}
 		u16 bestOffset = 0;
-		for (size_t i = 0; i < position; ++i) {
+		for (u16 i = 0; i < position; ++i) {
 			const bool isExactMatch = uncompressed[i] == uncompressed[position];
 			const bool isBitReversedMatch = reverses[uncompressed[i]] == uncompressed[position];
 			if (isExactMatch) {
@@ -93,7 +93,7 @@ size_t compress(const u8 *uncompressed, size_t uncompressedSize, u8 **compressed
 				}
 				{
 					u16 matches = 1;
-					const u16 backwardSearchSpace = min(i + 1, forwardSearchSpace);
+					const u16 backwardSearchSpace = min((unsigned) (i + 1), forwardSearchSpace);
 					for (u16 j = 1; j < backwardSearchSpace; ++j) {
 						if (uncompressed[i - j] != uncompressed[position + j]) {
 							break;
@@ -149,7 +149,7 @@ size_t compress(const u8 *uncompressed, size_t uncompressedSize, u8 **compressed
 	}
 	flushStash(context, uncompressed);
 	terminateCompressionContext(context);
-	const size_t compressedSize = context->allocation->written;
+	const u32 compressedSize = context->allocation->written;
 	*compressed = malloc(compressedSize);
 	if (compressedSize) {
 		memcpy(*compressed, context->allocation->buffer, compressedSize);

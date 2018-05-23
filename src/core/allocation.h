@@ -3,7 +3,7 @@
 #include <stdlib.h>
 typedef struct AllocationInternals AllocationInternals;
 typedef struct {
-	size_t written;
+	u32 written;
 	u8 *buffer;
 	AllocationInternals *internals;
 } Allocation;
