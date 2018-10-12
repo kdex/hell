@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.9.4)
+cmake_minimum_required(VERSION 3.9.2)
 project(hell VERSION 0.0.1)
 set(CMAKE_C_STANDARD 11)
 if(NOT CMAKE_BUILD_TYPE)
