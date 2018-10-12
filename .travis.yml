@@ -6,13 +6,5 @@ os:
 compiler:
  - clang
  - gcc
-# arch:
-# packages:
-#  - cmake
-#  # `clang` owns `clang-tidy`
-#  - clang
-# script:
-#  - ".travis/install"
 script:
  - ".travis/install"
-#  - "curl -s https://raw.githubusercontent.com/mikkeloscar/arch-travis/master/arch-travis.sh | bash"

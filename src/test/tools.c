@@ -127,7 +127,7 @@ void compare(
 	if (actualSize != expectedSize) {
 		fail("Size mismatch. Expected %i, got %i\n", expectedSize, actualSize);
 	}
-	if (memcmp(expected, actual, actualSize)) {
+	if (memcmp(expected, actual, actualSize) != 0) {
 		char *message = calloc(1, 1);
 		size_t messageSize = 1;
 		const char *offsetTitle = "Offset";

@@ -11,20 +11,31 @@ if(CCACHE_FOUND)
 	set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache)
 endif()
 set(CMAKE_C_OUTPUT_EXTENSION_REPLACE ON)
-set(CMAKE_LINK_WHAT_YOU_USE TRUE)
-set(CLANG_TIDY_OPTIONS
-	-checks=-*
-	bugprone-*
-	llvm-include-order
-	misc-*
-	-misc-suspicious-string-compare
-	modernize-*
-	performance-*
-	portability-*
-	readability-*
-)
-string(REPLACE ";" "," CLANG_TIDY_OPTIONS_COMMA_SEPARATED "${CLANG_TIDY_OPTIONS}")
-set(CMAKE_C_CLANG_TIDY "clang-tidy;${CLANG_TIDY_OPTIONS_COMMA_SEPARATED}")
+if (NOT APPLE)
+	set(CMAKE_LINK_WHAT_YOU_USE TRUE)
+endif()
+find_program(CLANG_TIDY NAMES clang-tidy)
+if(CLANG_TIDY)
+	message(STATUS "Found clang-tidy: ${CLANG_TIDY}")
+	set(CLANG_TIDY_OPTIONS
+		-checks=-*
+		-clang-diagnostic-newline-eof
+		bugprone-*
+		llvm-include-order
+		misc-*
+		-misc-suspicious-string-compare
+		modernize-*
+		performance-*
+		portability-*
+		readability-*
+	)
+	string(REPLACE ";" "," CLANG_TIDY_OPTIONS_COMMA_SEPARATED "${CLANG_TIDY_OPTIONS}")
+	set(CMAKE_C_CLANG_TIDY
+		${CLANG_TIDY}
+		-system-headers
+		-checks=${CLANG_TIDY_OPTIONS_COMMA_SEPARATED}
+	)
+endif()
 set(COMMON_FLAGS
 	-Wall
 	-Wextra
