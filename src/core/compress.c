@@ -24,7 +24,7 @@ u32 compress(const u8 *uncompressed, u32 uncompressedSize, u8 **compressed) {
 	u16 position = 0;
 	while (position < uncompressedSize) {
 		const u8 byteA = uncompressed[position];
-		const u16 forwardSearchSpace = min(uncompressedSize - position, context->large->capacity);
+		const u16 forwardSearchSpace = minimum(uncompressedSize - position, context->large->capacity);
 		u8 byteB = 0;
 		u16 matched = 1;
 		CompressionMode leader = UNCOMPRESSED;
@@ -32,7 +32,7 @@ u32 compress(const u8 *uncompressed, u32 uncompressedSize, u8 **compressed) {
 			if (forwardSearchSpace >= minBytesMatches) {
 				u16 pairs = 1;
 				byteB = uncompressed[position + 1];
-				const u16 end = min((unsigned) (position + context->large->capacity), uncompressedSize) - 1;
+				const u16 end = minimum((unsigned) (position + context->large->capacity), uncompressedSize) - 1;
 				for (u16 i = position + 2; i < end; i += 2) {
 					if (uncompressed[i] != byteA || uncompressed[i + 1] != byteB) {
 						break;
@@ -93,7 +93,7 @@ u32 compress(const u8 *uncompressed, u32 uncompressedSize, u8 **compressed) {
 				}
 				{
 					u16 matches = 1;
-					const u16 backwardSearchSpace = min((unsigned) (i + 1), forwardSearchSpace);
+					const u16 backwardSearchSpace = minimum((unsigned) (i + 1), forwardSearchSpace);
 					for (u16 j = 1; j < backwardSearchSpace; ++j) {
 						if (uncompressed[i - j] != uncompressed[position + j]) {
 							break;

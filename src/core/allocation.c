@@ -26,7 +26,7 @@ size_t availableSpace(const Allocation *allocation) {
 }
 void reserve(Allocation * const allocation, size_t bytes) {
 	if (availableSpace(allocation) < bytes) {
-		const size_t newSize = min(MAX_PAYLOAD, max(allocation->written + bytes, allocation->internals->size * 2));
+		const size_t newSize = minimum(MAX_PAYLOAD, maximum(allocation->written + bytes, allocation->internals->size * 2));
 		resize(allocation, newSize);
 	}
 }

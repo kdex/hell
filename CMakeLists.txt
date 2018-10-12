@@ -102,8 +102,9 @@ if(NOT MSVC)
 	endif()
 else()
 	add_definitions(
-		/DNOMINMAX
-		/D_CRT_DECLARE_NONSTDCNAMES=0
+		-D_CRT_DECLARE_NONSTDC_NAMES=0
+		-DNOMINMAX
+		-DWIN32_LEAN_AND_MEAN
 	)
 endif()
 enable_testing()
