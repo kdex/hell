@@ -7,4 +7,4 @@ compiler:
  - clang
  - gcc
 script:
- - ".travis/install"
+ - "bin/travis-install"
