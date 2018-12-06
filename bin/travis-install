@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -e
 BUILD_DIRECTORY="build"
 runTests() {
 	make -j
