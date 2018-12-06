@@ -1,0 +1,11 @@
+Checks:
+ -*
+ -clang-diagnostic-newline-eof
+ bugprone-*
+ llvm-include-order
+ misc-*
+ -misc-suspicious-string-compare
+ modernize-*
+ performance-*
+ portability-*
+ readability-*

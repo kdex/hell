@@ -15,28 +15,10 @@ set(CMAKE_C_OUTPUT_EXTENSION_REPLACE ON)
 if (NOT APPLE)
 	set(CMAKE_LINK_WHAT_YOU_USE TRUE)
 endif()
-find_program(CLANG_TIDY NAMES clang-tidy)
-if(CLANG_TIDY)
-	message(STATUS "Found clang-tidy: ${CLANG_TIDY}")
-	set(CLANG_TIDY_OPTIONS
-		-checks=-*
-		-clang-diagnostic-newline-eof
-		bugprone-*
-		llvm-include-order
-		misc-*
-		-misc-suspicious-string-compare
-		modernize-*
-		performance-*
-		portability-*
-		readability-*
-	)
-	string(REPLACE ";" "," CLANG_TIDY_OPTIONS_COMMA_SEPARATED "${CLANG_TIDY_OPTIONS}")
-	set(CMAKE_C_CLANG_TIDY
-		${CLANG_TIDY}
-		-system-headers
-		-checks=${CLANG_TIDY_OPTIONS_COMMA_SEPARATED}
-	)
-endif()
+add_custom_target(lint
+	COMMAND ./lint
+	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/bin
+)
 set(COMMON_FLAGS
 	-Wall
 	-Wextra

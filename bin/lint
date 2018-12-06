@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+DIR="$(dirname "$0")"
+SRC="$DIR/../src"
+if ! clang-tidy "$SRC"/**/*.c -- -I "$SRC" 2> /dev/null; then
+	>&2 echo "clang-tidy is not installed."
+	exit 1
+fi
