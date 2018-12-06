@@ -13,5 +13,5 @@ cmake -DCMAKE_BUILD_TYPE=Debug ..
 make lint
 runTests
 # If everything went well, we will test the project without any instrumentation and full optimization
-rm -rf * && cmake -DCMAKE_BUILD_TYPE=Release ..
+rm -rf ./* && cmake -DCMAKE_BUILD_TYPE=Release ..
 runTests
