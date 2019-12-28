@@ -6,7 +6,7 @@ jobs:
     - name: Build the project
       run: mkdir build && cd $_ && cmake .. -DCMAKE_BUILD_TYPE=${{ matrix.os }} -DCMAKE_C_COMPILER=${{ matrix.cc }} && make -j$(nproc)
     - name: Test the project
-      run: cd build && make test
+      run: cd build && CTEST_OUTPUT_ON_FAILURE=1 make test -j$(nproc)
     strategy:
       matrix:
         os: [macOS-latest, ubuntu-latest]

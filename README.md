@@ -3,7 +3,7 @@
 </p>
 
 # hell
-[![Build status](https://travis-ci.org/kdex/hell.svg?branch=master)](https://travis-ci.org/kdex/hell)
+[![Build status](https://github.com/kdex/hell/workflows/build/badge.svg)](https://github.com/kdex/hell/actions)
 [![Build status](https://ci.appveyor.com/api/projects/status/l09ktnael2mpgp53/branch/master?svg=true)](https://ci.appveyor.com/project/kdex/hell/branch/master)
 
 A cross-platform set of (de)compression tools for HAL Laboratory games.

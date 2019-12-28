@@ -3,7 +3,8 @@ after_build:
 before_build:
   - cmake -G "Visual Studio 14 2015 Win64" .
 build:
- parallel: true
+  parallel: true
+  project: $(APPVEYOR_BUILD_FOLDER)\$(APPVEYOR_PROJECT_NAME).sln
 configuration:
   - Debug
   - Release
