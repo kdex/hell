@@ -1,5 +1,5 @@
 after_build:
-  - make test
+  - ctest -j$NUMBER_OF_PROCESSORS
 before_build:
   - cmake -G "Visual Studio 14 2015 Win64" .
 build:
