@@ -1,15 +1,15 @@
-image:
- - Visual Studio 2015
- - Visual Studio 2017
-configuration:
- - Release
- - Debug
-platform:
- - x64
+after_build:
+  - make test
 before_build:
- - if %PLATFORM% == x64 (set GENERATOR="Visual Studio 14 2015 Win64")
- - mkdir build
- - cd build
- - cmake -G %GENERATOR% ..
+  - cmake -G "Visual Studio 14 2015 Win64" .
 build:
  parallel: true
+configuration:
+  - Debug
+  - Release
+image:
+  - Visual Studio 2015
+  - Visual Studio 2017
+  - Visual Studio 2019
+platform:
+  - x64

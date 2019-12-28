@@ -29,6 +29,13 @@ set_target_properties(libhell-shared PROPERTIES
 set_target_properties(libhell-static PROPERTIES
 	OUTPUT_NAME ${PROJECT_NAME}
 )
+if(NOT APPLE)
+	add_custom_command(
+		TARGET libhell-shared
+		POST_BUILD
+		COMMAND ${CMAKE_STRIP} $<TARGET_FILE:libhell-shared>
+	)
+endif()
 add_subdirectory(make-lut)
 set(PUBLIC_HEADERS
 	compress.h

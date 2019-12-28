@@ -1,0 +1,16 @@
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build the project
+      run: mkdir build && cd $_ && cmake .. -DCMAKE_BUILD_TYPE=${{ matrix.os }} -DCMAKE_C_COMPILER=${{ matrix.cc }} && make -j$(nproc)
+    - name: Test the project
+      run: cd build && make test
+    strategy:
+      matrix:
+        os: [macOS-latest, ubuntu-latest]
+        cc: [clang, gcc]
+        build-type: [Debug, Release]
+name: build
+on: push

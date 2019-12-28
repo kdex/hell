@@ -11,10 +11,6 @@ if(CCACHE_FOUND)
 	set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
 	set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache)
 endif()
-execute_process(
-	COMMAND ${CMAKE_C_COMPILER} -fuse-ld=gold -Wl,--version
-	ERROR_QUIET OUTPUT_VARIABLE LD_VERSION
-)
 include(CheckIPOSupported)
 check_ipo_supported(RESULT IPO_SUPPORTED)
 if(IPO_SUPPORTED)
@@ -29,28 +25,27 @@ add_custom_target(lint
 	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/bin
 )
 set(COMMON_FLAGS
+	-pedantic
 	-Wall
 	-Wextra
-	-pedantic
 	-Wsign-conversion
 )
 set(DEBUG_FLAGS
+	--coverage
 	-DDEBUG
 	-fsanitize=address,undefined
-	--coverage
 )
 set(RELEASE_FLAGS
-	-O3
-	-fomit-frame-pointer
-	-ffunction-sections
 	-fdata-sections
-	-fno-unwind-tables
+	-ffast-math
+	-ffunction-sections
+	-fmerge-all-constants
 	-fno-asynchronous-unwind-tables
 	-fno-math-errno
 	-fno-unroll-loops
-	-fmerge-all-constants
-	-fno-ident
-	-ffast-math
+	-fno-unwind-tables
+	-fomit-frame-pointer
+	-O3
 )
 set(GCC FALSE)
 set(CLANG FALSE)
@@ -59,14 +54,31 @@ if(CMAKE_C_COMPILER_ID MATCHES "GNU")
 elseif(CMAKE_C_COMPILER_ID MATCHES "Clang")
 	set(CLANG TRUE)
 endif()
+# Use lld if available
+execute_process(
+	COMMAND ${CMAKE_C_COMPILER} -fuse-ld=lld -Wl,--version
+	ERROR_QUIET OUTPUT_VARIABLE LD_VERSION
+)
+if("${LD_VERSION}" MATCHES "LLD" AND ${CLANG})
+	message(STATUS ${LD_VERSION})
+	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fuse-ld=lld")
+	unset(LD_VERSION)
+else()
+	# Use gold if available
+	execute_process(
+		COMMAND ${CMAKE_C_COMPILER} -fuse-ld=gold -Wl,--version
+		ERROR_QUIET OUTPUT_VARIABLE LD_VERSION
+	)
+	if("${LD_VERSION}" MATCHES "GNU gold")
+		message(STATUS ${LD_VERSION})
+		set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fuse-ld=gold")
+		unset(LD_VERSION)
+	else()
+		message(WARNING "Neither lld nor GNU gold linker is available, using the default system linker")
+	endif()
+endif()
 set(DEBUG FALSE)
 set(RELEASE FALSE)
-if("${LD_VERSION}" MATCHES "GNU gold")
-	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fuse-ld=gold")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fuse-ld=gold")
-else()
-	message(WARNING "GNU gold linker is not available, using the default system linker")
-endif()
 if(CMAKE_BUILD_TYPE MATCHES Debug)
 	set(DEBUG TRUE)
 elseif(CMAKE_BUILD_TYPE MATCHES Release)
