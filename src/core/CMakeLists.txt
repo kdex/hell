@@ -29,7 +29,7 @@ set_target_properties(libhell-shared PROPERTIES
 set_target_properties(libhell-static PROPERTIES
 	OUTPUT_NAME ${PROJECT_NAME}
 )
-if(NOT APPLE)
+if(NOT APPLE AND NOT MSVC)
 	add_custom_command(
 		TARGET libhell-shared
 		POST_BUILD

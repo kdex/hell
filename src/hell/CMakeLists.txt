@@ -2,7 +2,7 @@ add_executable(${PROJECT_NAME}
 	main.c
 )
 target_link_libraries(${PROJECT_NAME} io libhell-static)
-if(NOT APPLE)
+if(NOT APPLE AND NOT MSVC)
 	add_custom_command(
 		TARGET ${PROJECT_NAME}
 		POST_BUILD

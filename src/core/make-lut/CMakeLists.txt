@@ -1,7 +1,7 @@
 add_executable(make-lut
 	main.c
 )
-if(NOT APPLE)
+if(NOT APPLE AND NOT MSVC)
 	add_custom_command(
 		TARGET make-lut
 		POST_BUILD
