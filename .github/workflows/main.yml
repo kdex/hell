@@ -4,12 +4,14 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Build the project
-      run: mkdir build && cd $_ && cmake .. -DCMAKE_BUILD_TYPE=${{ matrix.os }} -DCMAKE_C_COMPILER=${{ matrix.cc }} && make -j$(nproc)
+      run: ls -ahl && .github/workflows/main.sh ${{ matrix.os }} ${{ matrix.build-type }} ${{ matrix.cc }}
+      shell: bash
     - name: Test the project
       run: cd build && CTEST_OUTPUT_ON_FAILURE=1 ctest -j$(nproc)
+      shell: bash
     strategy:
       matrix:
-        os: [macOS-latest, ubuntu-latest]
+        os: [macOS-latest, ubuntu-latest, windows-latest]
         cc: [clang, gcc]
         build-type: [Debug, Release]
 name: build

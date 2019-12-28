@@ -4,7 +4,6 @@
 
 # hell
 [![Build status](https://github.com/kdex/hell/workflows/build/badge.svg)](https://github.com/kdex/hell/actions)
-[![Build status](https://ci.appveyor.com/api/projects/status/l09ktnael2mpgp53/branch/master?svg=true)](https://ci.appveyor.com/project/kdex/hell/branch/master)
 
 A cross-platform set of (de)compression tools for HAL Laboratory games.
 ## Compression
@@ -74,7 +73,8 @@ In the project root, run:
 ```bash
 $ mkdir build
 $ cd $_
-$ cmake .. && make -j$(nproc)
+$ cmake ..
+$ cmake --build . -j $(nproc)
 ```
 This will build the following assets for you:
 - `hell` binary
@@ -84,15 +84,15 @@ This will build the following assets for you:
 ### Installation
 Installing `hell` will make the aforementioned assets globally available. In the build directory, run:
 ```bash
-$ sudo make -j$(nproc) install
+$ sudo cmake --build . --install -j $(nproc)
 ```
 If you would like the assets to be installed in a local directory, you should instead invoke `cmake` like so:
 ```bash
 $ cmake -DCMAKE_INSTALL_PREFIX=YOUR_PREFIX_HERE ..
-$ make -j$(nproc) install
+$ cmake --build . --install -j $(nproc)
 ```
 ### Testing
 In the build directory, you can run the unit tests via:
 ```bash
-$ make -j$(nproc) test
+$ ctest -j$(nproc)
 ```
