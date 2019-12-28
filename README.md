@@ -74,7 +74,7 @@ In the project root, run:
 ```bash
 $ mkdir build
 $ cd $_
-$ cmake .. && make -j
+$ cmake .. && make -j$(nproc)
 ```
 This will build the following assets for you:
 - `hell` binary
@@ -84,15 +84,15 @@ This will build the following assets for you:
 ### Installation
 Installing `hell` will make the aforementioned assets globally available. In the build directory, run:
 ```bash
-# make -j install
+$ sudo make -j$(nproc) install
 ```
 If you would like the assets to be installed in a local directory, you should instead invoke `cmake` like so:
 ```bash
 $ cmake -DCMAKE_INSTALL_PREFIX=YOUR_PREFIX_HERE ..
-$ make -j install
+$ make -j$(nproc) install
 ```
 ### Testing
 In the build directory, you can run the unit tests via:
 ```bash
-$ make -j test
+$ make -j$(nproc) test
 ```
