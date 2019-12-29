@@ -1,5 +1,23 @@
 cmake_minimum_required(VERSION 3.9.2)
-project(hell VERSION 0.0.1)
+execute_process(
+	COMMAND git describe --tags
+	OUTPUT_VARIABLE GIT_DESCRIBE
+)
+function(try_strip TARGET)
+	if(NOT APPLE AND NOT MSVC)
+		add_custom_command(
+			TARGET ${TARGET}
+			POST_BUILD
+			COMMAND ${CMAKE_STRIP} $<TARGET_FILE:${TARGET}>
+		)
+	endif()
+endfunction(try_strip)
+string(REGEX REPLACE "^([0-9]+)\\..*" "\\1" VERSION_MAJOR "${GIT_DESCRIBE}")
+string(REGEX REPLACE "^[0-9]+\\.([0-9]+).*" "\\1" VERSION_MINOR "${GIT_DESCRIBE}")
+string(REGEX REPLACE "^[0-9]+\\.[0-9]+\\.([0-9]+).*" "\\1" VERSION_PATCH "${GIT_DESCRIBE}")
+string(REGEX REPLACE "^[0-9]+\\.[0-9]+\\.[0-9]+(.*)" "\\1" VERSION_SHA1 "${GIT_DESCRIBE}")
+set(VERSION_SHORT "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
+project(hell VERSION ${VERSION_SHORT})
 set(CMAKE_C_STANDARD 11)
 if(NOT CMAKE_BUILD_TYPE)
 	message(STATUS "No build type specified; falling back to `Release`")

@@ -1,0 +1,20 @@
+#include "io/io.h"
+#include <stdint.h>
+#include <stdio.h>
+int main(int argc, char *argv[]) {
+	const char *invocation = argv[0];
+	if (argc == 2) {
+		const char *path = argv[1];
+		FILE *fp = fopen(path, "w");
+		if (fp) {
+			fprintf(fp, "const char *projectName = \"@PROJECT_NAME@\";\n");
+			fprintf(fp, "const char *projectVersion = \"@PROJECT_VERSION@\";");
+		}
+		else {
+			failWithFileError(path, invocation);
+		}
+	}
+	else {
+		printf("Syntax: %s <OUTPUT_PATH>\n", invocation);
+	}
+}

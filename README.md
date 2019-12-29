@@ -8,11 +8,13 @@
 A cross-platform set of (de)compression tools for HAL Laboratory games.
 ## Compression
 In order to compress the file `INPUT` and place the result at `OUTPUT`, you can use the `compress` subcommand:
+
 ```bash
 $ hell compress INPUT OUTPUT
 ```
 ## Decompression
 Analogously, in order to decompress the file `INPUT` and place the result at `OUTPUT`, you can use the `decompress` subcommand:
+
 ```bash
 $ hell decompress INPUT OUTPUT
 ```
@@ -70,6 +72,7 @@ This also implies that the "sliding window" you may know from LZ77 can have a ma
 This project uses the CMake build system.
 ### How to build
 In the project root, run:
+
 ```bash
 $ mkdir build
 $ cd $_
@@ -83,16 +86,19 @@ This will build the following assets for you:
 
 ### Installation
 Installing `hell` will make the aforementioned assets globally available. In the build directory, run:
+
 ```bash
-$ sudo cmake --build . --install -j $(nproc)
+$ sudo cmake --build . -j $(nproc) --target install
 ```
 If you would like the assets to be installed in a local directory, you should instead invoke `cmake` like so:
+
 ```bash
 $ cmake -DCMAKE_INSTALL_PREFIX=YOUR_PREFIX_HERE ..
-$ cmake --build . --install -j $(nproc)
+$ cmake --build . -j $(nproc) --target install
 ```
 ### Testing
 In the build directory, you can run the unit tests via:
+
 ```bash
-$ ctest -j$(nproc)
+$ ctest -j $(nproc)
 ```

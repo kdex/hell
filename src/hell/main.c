@@ -2,6 +2,7 @@
 #include "common/types.h"
 #include "core/compress.h"
 #include "core/decompress.h"
+#include "core/make-meta/meta.h"
 #include "io/io.h"
 #include <stdbool.h>
 #include <stdio.h>
@@ -17,6 +18,10 @@ int main(int argc, const char *argv[]) {
 		return printSyntax(invocation);
 	}
 	const char *mode = argv[1];
+	if (!strcmp(mode, "-v") || !strcmp(mode, "--version")) {
+		printf("%s version %s\n", projectName, projectVersion);
+		return EXIT_SUCCESS;
+	}
 	if (!strcmp(mode, "compress")) {
 		if (argc < 4) {
 			fprintf(stderr, "Not enough arguments for mode \"%s\".\n", mode);

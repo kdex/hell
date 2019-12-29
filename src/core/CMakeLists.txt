@@ -3,6 +3,11 @@ add_custom_command(
 	OUTPUT ${LUT}
 	COMMAND make-lut ${LUT}
 )
+set(META meta.c)
+add_custom_command(
+	OUTPUT ${META}
+	COMMAND make-meta ${META}
+)
 set(LIBRARY_SOURCES
 	allocation.c
 	compress.c
@@ -12,6 +17,7 @@ set(LIBRARY_SOURCES
 	header.c
 	util.c
 	${LUT}
+	${META}
 )
 add_library(libhell-object OBJECT ${LIBRARY_SOURCES})
 set_target_properties(libhell-object PROPERTIES
@@ -29,14 +35,9 @@ set_target_properties(libhell-shared PROPERTIES
 set_target_properties(libhell-static PROPERTIES
 	OUTPUT_NAME ${PROJECT_NAME}
 )
-if(NOT APPLE AND NOT MSVC)
-	add_custom_command(
-		TARGET libhell-shared
-		POST_BUILD
-		COMMAND ${CMAKE_STRIP} $<TARGET_FILE:libhell-shared>
-	)
-endif()
+try_strip(libhell-shared)
 add_subdirectory(make-lut)
+add_subdirectory(make-meta)
 set(PUBLIC_HEADERS
 	compress.h
 	decompress.h
