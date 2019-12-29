@@ -2,17 +2,28 @@ jobs:
   test:
     runs-on: ${{ matrix.os }}
     steps:
-    - uses: actions/checkout@v2
-    - name: Build the project
-      run: ls -ahl && .github/workflows/main.sh ${{ matrix.os }} ${{ matrix.build-type }} ${{ matrix.cc }}
+    - uses: actions/checkout@master
+    - name: Fetch history for all tags
+      run: |
+        git fetch --depth=1 origin "+refs/tags/*:refs/tags/*"
+        git fetch --prune --unshallow
+    - name: Build targets
+      run: .github/workflows/main.sh ${{ matrix.os }} ${{ matrix.build-type }} ${{ matrix.cc }}
       shell: bash
-    - name: Test the project
+    - name: Run tests
       run: cd build && CTEST_OUTPUT_ON_FAILURE=1 ctest -j$(nproc)
       shell: bash
     strategy:
       matrix:
-        os: [macOS-latest, ubuntu-latest, windows-latest]
-        cc: [clang, gcc]
-        build-type: [Debug, Release]
+        os:
+          - ubuntu-latest
+          - macOS-latest
+          - windows-latest
+        cc:
+          - clang
+          - gcc
+        build-type:
+          - Debug
+          - Release
 name: build
 on: push
