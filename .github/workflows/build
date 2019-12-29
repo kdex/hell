@@ -1,0 +1,19 @@
+# shellcheck shell=bash
+set -eE
+BUILD_TYPE="$1"
+C_COMPILER="$2"
+append_argument() {
+	local NAME="$1"
+	local VALUE="$2"
+	if [ -n "$NAME" ]; then
+		CMAKE_ARGUMENTS+=" -D$NAME=\"$VALUE\""
+	fi
+}
+rm -rf build
+mkdir -p "$_"
+cd "$_"
+CMAKE_ARGUMENTS=""
+append_argument CMAKE_BUILD_TYPE "$BUILD_TYPE"
+append_argument CMAKE_C_COMPILER "$C_COMPILER"
+eval cmake .. $CMAKE_ARGUMENTS
+eval cmake --build . -j "$(nproc)"
